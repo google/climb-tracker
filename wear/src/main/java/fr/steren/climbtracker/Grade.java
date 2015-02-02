@@ -1,10 +1,10 @@
 package fr.steren.climbtracker;
 
 public class Grade {
-    public final String mLabel;
+    public final String label;
 
     public Grade(String label) {
-        this.mLabel = label;
+        this.label = label;
     }
 
 }

@@ -11,21 +11,24 @@ import android.widget.Toast;
 
 public class ClimbTrackerWear extends Activity implements WearableListView.ClickListener {
 
-    private TextView mTextView;
+    private GradeList gradeList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        gradeList = new GradeList();
+
         setContentView(R.layout.activity_climb_tracker_wear);
 
         WearableListView listView = (WearableListView) findViewById(R.id.list);
-        listView.setAdapter(new Adapter(this));
+        listView.setAdapter(new Adapter(this, gradeList));
         listView.setClickListener(this);
     }
 
     @Override
     public void onClick(WearableListView.ViewHolder viewHolder) {
-        String selectedGradeLabel = GradeList.GRADES[(Integer) viewHolder.itemView.getTag()].mLabel;
+        String selectedGradeLabel = gradeList.get((int) viewHolder.itemView.getTag()).label;
         Toast.makeText(this, selectedGradeLabel, Toast.LENGTH_LONG);
     }
 
@@ -37,10 +40,12 @@ public class ClimbTrackerWear extends Activity implements WearableListView.Click
     private static final class Adapter extends WearableListView.Adapter {
         private final Context mContext;
         private final LayoutInflater mInflater;
+        private GradeList mGrades;
 
-        private Adapter(Context context) {
+        private Adapter(Context context, GradeList grades) {
             mContext = context;
             mInflater = LayoutInflater.from(context);
+            mGrades = grades;
         }
 
         @Override
@@ -52,13 +57,13 @@ public class ClimbTrackerWear extends Activity implements WearableListView.Click
         @Override
         public void onBindViewHolder(WearableListView.ViewHolder holder, int position) {
             TextView view = (TextView) holder.itemView.findViewById(R.id.name);
-            view.setText(GradeList.GRADES[position].mLabel);
+            view.setText(mGrades.get(position).label);
             holder.itemView.setTag(position);
         }
 
         @Override
         public int getItemCount() {
-            return GradeList.GRADES.length;
+            return mGrades.size();
         }
     }
 
