@@ -31,7 +31,6 @@ public class WearableListItemLayout extends LinearLayout
     private final int mFadedCircleColor;
     private final int mChosenCircleColor;
     private ImageView mCircle;
-    private float mScale;
     private TextView mName;
 
     public WearableListItemLayout(Context context) {
