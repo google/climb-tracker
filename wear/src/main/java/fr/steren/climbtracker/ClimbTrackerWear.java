@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.activity.ConfirmationActivity;
+import android.support.wearable.view.DelayedConfirmationView;
 import android.support.wearable.view.WearableListView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +17,9 @@ import android.widget.Toast;
 public class ClimbTrackerWear extends Activity implements WearableListView.ClickListener {
     private static final int SAMPLE_NOTIFICATION_ID = 0;
     private GradeList gradeList;
+    private DelayedConfirmationView mDelayedView;
+
+    public static final String EXTRA_ROUTE_LABEL = "routeLabel";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +38,9 @@ public class ClimbTrackerWear extends Activity implements WearableListView.Click
     public void onClick(WearableListView.ViewHolder viewHolder) {
         String selectedGradeLabel = gradeList.get((int) viewHolder.itemView.getTag()).label;
 
-        Intent intent = new Intent(this, ConfirmationActivity.class);
-        intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE,
-                ConfirmationActivity.SUCCESS_ANIMATION);
-        intent.putExtra(ConfirmationActivity.EXTRA_MESSAGE,
-                TextUtils.concat(selectedGradeLabel, " ", getString(R.string.climb_saved)));
+        Intent intent = new Intent(this, ClimbConfirmation.class);
+        intent.putExtra(ClimbTrackerWear.EXTRA_ROUTE_LABEL, selectedGradeLabel);
+
         startActivity(intent);
     }
 

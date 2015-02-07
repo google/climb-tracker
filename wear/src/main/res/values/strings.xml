@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Climb Tracker</string>
 
     <string name="climb">Climb</string>
-    <string name="climb_saved">climbed</string>
+
+    <string name="climb_recap">%1$s climb</string>
+
+    <string name="saving_climb">Saving...</string>
+
+    <string name="climb_canceled">Canceled</string>
+    <string name="climb_saved">%1$s climbed</string>
 
 </resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="@string/climb_recap"
+        android:fontFamily="sans-serif-condensed-light"
+        android:id="@+id/climb_recap"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center_horizontal" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <android.support.wearable.view.DelayedConfirmationView
+            android:id="@+id/delayed_confirm"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/cancel"
+            app:circle_border_color="@color/wl_light_blue"
+            app:circle_border_width="4dp"
+            app:circle_radius="30dp"
+            android:layout_gravity="center_vertical">
+        </android.support.wearable.view.DelayedConfirmationView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-condensed-light"
+            android:text="@string/saving_climb"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp" />
+    </LinearLayout>
+
+</LinearLayout>

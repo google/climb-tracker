@@ -16,6 +16,7 @@
 
 <resources>
     <color name="wl_blue">#2878ff</color>
+    <color name="wl_light_blue">#ff81dfff</color>
     <color name="wl_gray">#c1c1c1</color>
     <color name="text_color">#434343</color>
 </resources>
