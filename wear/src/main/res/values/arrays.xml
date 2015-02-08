@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- see https://en.wikipedia.org/wiki/Grade_(climbing) -->
+    <array name="grades_uuia">
+        <item>3</item>
+        <item>4</item>
+        <item>4+</item>
+        <item>5-</item>
+        <item>5</item>
+        <item>5+</item>
+        <item>6-</item>
+        <item>6</item>
+        <item>6+</item>
+        <item>7-</item>
+        <item>7</item>
+        <item>7+</item>
+        <item>8-</item>
+        <item>8</item>
+        <item>8+</item>
+        <item>9-</item>
+        <item>9</item>
+        <item>9+</item>
+        <item>10-</item>
+        <item>10</item>
+        <item>10+</item>
+    </array>
+    <array name="grades_french">
+        <item>4a</item>
+        <item>4b</item>
+        <item>4c</item>
+        <item>5a</item>
+        <item>5b</item>
+        <item>5c</item>
+        <item>6a</item>
+        <item>6a+</item>
+        <item>6b</item>
+        <item>6b+</item>
+        <item>6c</item>
+        <item>6c+</item>
+        <item>7a</item>
+        <item>7a+</item>
+        <item>7b</item>
+        <item>7b+</item>
+        <item>7c</item>
+        <item>7c+</item>
+        <item>8a</item>
+        <item>8a+</item>
+        <item>8b</item>
+        <item>8b+</item>
+        <item>8c</item>
+        <item>8c+</item>
+        <item>9a</item>
+        <item>9a+</item>
+        <item>9b</item>
+        <item>9b+</item>
+    </array>
+</resources>

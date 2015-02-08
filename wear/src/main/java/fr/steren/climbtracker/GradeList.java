@@ -1,22 +1,24 @@
 package fr.steren.climbtracker;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+
 import java.util.ArrayList;
 
 public class GradeList {
 
     private ArrayList<Grade> grades;
 
-    GradeList() {
+    GradeList(Context context) {
         grades = new ArrayList<Grade>();
-        grades.add(new Grade("4"));
-        grades.add(new Grade("4+"));
-        grades.add(new Grade("5-"));
-        grades.add(new Grade("5"));
-        grades.add(new Grade("5+"));
-        grades.add(new Grade("6-"));
-        grades.add(new Grade("6"));
-        grades.add(new Grade("6+"));
-        grades.add(new Grade("7-"));
+
+        // load a resource file containing the grades definition
+        Resources res = context.getResources();
+        TypedArray gradeDefinition = res.obtainTypedArray(R.array.grades_uuia);
+        for( int i = 0; i < gradeDefinition.length(); i++) {
+            grades.add(new Grade(gradeDefinition.getString(i)));
+        }
     }
 
     Grade get(int index) {

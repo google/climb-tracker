@@ -25,7 +25,7 @@ public class ClimbTrackerWear extends Activity implements WearableListView.Click
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        gradeList = new GradeList();
+        gradeList = new GradeList(this);
 
         setContentView(R.layout.activity_climb_tracker_wear);
 
