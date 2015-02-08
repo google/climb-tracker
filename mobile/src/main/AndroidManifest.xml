@@ -16,6 +16,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ClimbSessionDetailActivity"
+            android:label="@string/title_climbsession_detail"
+            android:parentActivityName=".ClimbTracker" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ClimbTracker" />
+        </activity>
     </application>
 
 </manifest>

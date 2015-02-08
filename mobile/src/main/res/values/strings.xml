@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Climb Tracker</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+
+    <string name="title_climbsession_detail">Climbing session</string>
 
 </resources>
