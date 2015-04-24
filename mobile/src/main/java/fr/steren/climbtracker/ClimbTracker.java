@@ -1,8 +1,26 @@
 package fr.steren.climbtracker;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.data.FreezableUtils;
+import com.google.android.gms.wearable.Asset;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItemAsset;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.Wearable;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,7 +40,16 @@ import android.support.v4.app.FragmentActivity;
  * to listen for item selections.
  */
 public class ClimbTracker extends FragmentActivity
-        implements ClimbSessionListFragment.Callbacks {
+        implements ClimbSessionListFragment.Callbacks,
+        DataApi.DataListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = "ClimbTracker";
+
+    private static final String CLIMB_PATH = "/climb";
+    private static final String ROUTE_LABEL_KEY = "fr.steren.climbtracker.key.routelabel";
+
+    private GoogleApiClient mGoogleApiClient;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -34,6 +61,12 @@ public class ClimbTracker extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_climb_tracker);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
 
         if (findViewById(R.id.climbsession_detail_container) != null) {
             // The detail container view will be present only in the
@@ -50,6 +83,18 @@ public class ClimbTracker extends FragmentActivity
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mGoogleApiClient.disconnect();
     }
 
     /**
@@ -77,5 +122,42 @@ public class ClimbTracker extends FragmentActivity
             detailIntent.putExtra(ClimbSessionDetailFragment.ARG_ITEM_ID, id);
             startActivity(detailIntent);
         }
+    }
+
+    @Override
+    public void onDataChanged(DataEventBuffer dataEvents) {
+        Log.d(TAG, "onDataChanged: " + dataEvents);
+        final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
+        dataEvents.close();
+        for (DataEvent event : events) {
+            Log.d(TAG, "Event: " + event.getDataItem().toString());
+            Uri uri = event.getDataItem().getUri();
+            String path = uri.getPath();
+
+            if (CLIMB_PATH.equals(path)) {
+                DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
+                String routeLabel = dataMapItem.getDataMap().getString(ROUTE_LABEL_KEY);
+                if(routeLabel != null) {
+                    Log.d(TAG, "New Climb, grade : " + routeLabel);
+                }
+            }
+
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "onConnected(): Successfully connected to Google API client");
+        Wearable.DataApi.addListener(mGoogleApiClient, this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.e(TAG, "Connection to Google API client has failed");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }
