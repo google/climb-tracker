@@ -16,7 +16,7 @@ public class ClimbSession {
     public String toString() {
         String result = "";
         for(Climb climb : climbs) {
-            result += climb.grade + " ";
+            result += climb.getGrade() + " ";
         }
         return result;
     }
