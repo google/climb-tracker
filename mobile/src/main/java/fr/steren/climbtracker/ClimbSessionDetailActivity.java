@@ -38,8 +38,10 @@ public class ClimbSessionDetailActivity extends ActionBarActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ClimbSessionDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_ITEM_ID));
+            arguments.putString(ClimbSessionDetailFragment.ARG_CLIMB_ID,
+                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_CLIMB_ID));
+            arguments.putString(ClimbSessionDetailFragment.ARG_CLIMB_TIME,
+                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME));
             ClimbSessionDetailFragment fragment = new ClimbSessionDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

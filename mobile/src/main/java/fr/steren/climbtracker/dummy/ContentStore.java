@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import fr.steren.climbtracker.Climb;
-import fr.steren.climbtracker.ClimbSession;
 
 
 public class ContentStore {
@@ -15,30 +14,19 @@ public class ContentStore {
     /**
      * An array of sample (dummy) items.
      */
-    public static List<ClimbSession> ITEMS = new ArrayList<ClimbSession>();
+    public static List<Climb> ITEMS = new ArrayList<Climb>();
 
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public static Map<String, ClimbSession> ITEM_MAP = new HashMap<String, ClimbSession>();
+    public static Map<String, Climb> ITEM_MAP = new HashMap<String, Climb>();
 
     static {
-        ArrayList<Climb> session1 = new ArrayList<Climb>();
-        session1.add(new Climb(new Date(), "5"));
-        session1.add(new Climb(new Date(), "5+"));
-        session1.add(new Climb(new Date(), "6+"));
-
-        ArrayList<Climb> session2 = new ArrayList<Climb>();
-        session2.add(new Climb(new Date(), "6"));
-        session2.add(new Climb(new Date(), "6+"));
-        session2.add(new Climb(new Date(), "7-"));
-        session2.add(new Climb(new Date(), "7"));
-
-        addItem(new ClimbSession("1", session1));
-        addItem(new ClimbSession("2", session2));
+        addItem(new Climb("1", new Date(), "6"));
+        addItem(new Climb("2", new Date(), "6+"));
     }
 
-    private static void addItem(ClimbSession item) {
+    private static void addItem(Climb item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }

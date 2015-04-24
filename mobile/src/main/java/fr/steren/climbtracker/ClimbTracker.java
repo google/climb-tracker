@@ -54,16 +54,17 @@ public class ClimbTracker extends FragmentActivity
 
     /**
      * Callback method from {@link ClimbSessionListFragment.Callbacks}
-     * indicating that the item with the given ID was selected.
+     * indicating that the item was selected.
      */
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(Climb climb) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ClimbSessionDetailFragment.ARG_ITEM_ID, id);
+            arguments.putString(ClimbSessionDetailFragment.ARG_CLIMB_ID, climb.id);
+            arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME, climb.getDate().getTime());
             ClimbSessionDetailFragment fragment = new ClimbSessionDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -74,7 +75,8 @@ public class ClimbTracker extends FragmentActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, ClimbSessionDetailActivity.class);
-            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_CLIMB_ID, climb.id);
+            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, climb.getDate().getTime());
             startActivity(detailIntent);
         }
     }
