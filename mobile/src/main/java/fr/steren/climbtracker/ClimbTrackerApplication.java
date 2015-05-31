@@ -9,6 +9,7 @@ public class ClimbTrackerApplication extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
         Firebase.setAndroidContext(this);
     }
 }

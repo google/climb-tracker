@@ -77,6 +77,7 @@ public class ClimbSessionListFragment extends ListFragment {
 
         mFirebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
         mFirebaseRef = mFirebaseRef.child("climbs");
+        mFirebaseRef.keepSynced(true);
 
         // Tell our list adapter that we only want 50 messages at a time
         mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50), getActivity(), R.layout.climb_item);
