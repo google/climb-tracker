@@ -2,7 +2,11 @@ package fr.steren.climbtracker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
 
 
 /**
@@ -48,6 +52,22 @@ public class ClimbTracker extends FragmentActivity
                     .findFragmentById(R.id.climbsession_list))
                     .setActivateOnItemClick(true);
         }
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Display Climb creation fragment.
+                Snackbar.make(coordinatorLayout, "Climb saved", Snackbar.LENGTH_LONG).setAction("Action", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                }).show();
+            }
+        });
 
         // TODO: If exposing deep links into your app, handle intents here.
     }
