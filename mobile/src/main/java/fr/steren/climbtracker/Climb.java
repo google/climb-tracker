@@ -14,6 +14,11 @@ public class Climb {
     private Climb() {
     }
 
+    public Climb(Date date, String grade) {
+        this.date = date;
+        this.grade = grade;
+    }
+
     public Climb(String id, Date date, String grade) {
         this.id = id;
         this.date = date;

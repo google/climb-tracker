@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
+
 import java.util.Date;
 
 import fr.steren.climbtracker.dummy.ContentStore;
@@ -37,6 +39,8 @@ public class ClimbSessionDetailFragment extends Fragment {
 
     private Date mDay;
 
+    private Firebase mFirebaseRef;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -47,6 +51,9 @@ public class ClimbSessionDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mFirebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
+        mFirebaseRef = mFirebaseRef.child("climbs");
 
         // retrieve the date of the selected item, and fetch all item of the same day.
         if (getArguments().containsKey(ARG_CLIMB_TIME)) {

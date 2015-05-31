@@ -3,6 +3,7 @@ package fr.steren.climbtracker;
 import android.net.Uri;
 import android.util.Log;
 
+import com.firebase.client.Firebase;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.data.FreezableUtils;
 import com.google.android.gms.wearable.DataEvent;
@@ -11,6 +12,7 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,9 +23,11 @@ public class DataLayerListenerService extends WearableListenerService {
     private static final String TAG = "DataLayerListener";
 
     private static final String CLIMB_PATH = "/climb";
-    private static final String ROUTE_LABEL_KEY = "fr.steren.climbtracker.key.routelabel";
+    private static final String ROUTE_GRADE_LABEL_KEY = "fr.steren.climbtracker.key.routegradelabel";
 
-    GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
+
+    private Firebase mFirebaseRef;
 
     @Override
     public void onCreate() {
@@ -32,6 +36,8 @@ public class DataLayerListenerService extends WearableListenerService {
                 .addApi(Wearable.API)
                 .build();
         mGoogleApiClient.connect();
+
+        mFirebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
     }
 
     @Override
@@ -46,9 +52,14 @@ public class DataLayerListenerService extends WearableListenerService {
 
             if (CLIMB_PATH.equals(path)) {
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-                String routeLabel = dataMapItem.getDataMap().getString(ROUTE_LABEL_KEY);
-                if (routeLabel != null) {
-                    Log.d(TAG, "New Climb, grade : " + routeLabel);
+                String routeGradeLabel = dataMapItem.getDataMap().getString(ROUTE_GRADE_LABEL_KEY);
+                if (routeGradeLabel != null) {
+                    Log.d(TAG, "New Climb, grade : " + routeGradeLabel);
+
+                    Climb newClimb = new Climb(new Date(), routeGradeLabel);
+
+
+                    mFirebaseRef.child("climbs").push().setValue(newClimb);
                 }
             }
         }

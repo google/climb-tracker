@@ -19,7 +19,7 @@ public class ClimbTrackerWear extends Activity implements WearableListView.Click
     private GradeList gradeList;
     private DelayedConfirmationView mDelayedView;
 
-    public static final String EXTRA_ROUTE_LABEL = "routeLabel";
+    public static final String EXTRA_ROUTE_GRADE_LABEL = "routeGradeLabel";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class ClimbTrackerWear extends Activity implements WearableListView.Click
         String selectedGradeLabel = gradeList.get((int) viewHolder.itemView.getTag()).label;
 
         Intent intent = new Intent(this, ClimbConfirmation.class);
-        intent.putExtra(ClimbTrackerWear.EXTRA_ROUTE_LABEL, selectedGradeLabel);
+        intent.putExtra(ClimbTrackerWear.EXTRA_ROUTE_GRADE_LABEL, selectedGradeLabel);
 
         startActivity(intent);
     }

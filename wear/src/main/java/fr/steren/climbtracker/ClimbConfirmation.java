@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
@@ -25,13 +23,13 @@ public class ClimbConfirmation extends Activity implements
 
     private static final String TAG = "ClimbConfirmation";
     private static final String CLIMB_PATH = "/climb";
-    private static final String ROUTE_LABEL_KEY = "fr.steren.climbtracker.key.routelabel";
+    private static final String ROUTE_GRADE_LABEL_KEY = "fr.steren.climbtracker.key.routegradelabel";
 
     private DelayedConfirmationView mDelayedView;
 
     private GoogleApiClient mGoogleApiClient;
 
-    private String routeLabelToSave;
+    private String routeGradeLabelToSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +47,11 @@ public class ClimbConfirmation extends Activity implements
         mDelayedView = (DelayedConfirmationView) findViewById(R.id.delayed_confirm);
         mDelayedView.setListener(this);
 
-        routeLabelToSave = getIntent().getStringExtra(ClimbTrackerWear.EXTRA_ROUTE_LABEL);
+        routeGradeLabelToSave = getIntent().getStringExtra(ClimbTrackerWear.EXTRA_ROUTE_GRADE_LABEL);
 
         // change the recap text
         TextView climbRecapText = (TextView) findViewById(R.id.climb_recap);
-        String recapString = getString(R.string.climb_recap, routeLabelToSave);
+        String recapString = getString(R.string.climb_recap, routeGradeLabelToSave);
         climbRecapText.setText(recapString);
 
         // Four seconds to cancel the action
@@ -68,7 +66,7 @@ public class ClimbConfirmation extends Activity implements
         if(!this.isFinishing()) {
             saveClimb();
 
-            String savedString = getString(R.string.climb_saved, routeLabelToSave);
+            String savedString = getString(R.string.climb_saved, routeGradeLabelToSave);
 
             Intent intent = new Intent(this, ConfirmationActivity.class);
             intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
@@ -87,7 +85,7 @@ public class ClimbConfirmation extends Activity implements
 
     private void saveClimb() {
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create(CLIMB_PATH);
-        putDataMapReq.getDataMap().putString(ROUTE_LABEL_KEY, routeLabelToSave);
+        putDataMapReq.getDataMap().putString(ROUTE_GRADE_LABEL_KEY, routeGradeLabelToSave);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
     }

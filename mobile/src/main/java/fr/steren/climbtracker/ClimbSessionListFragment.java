@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.firebase.client.Firebase;
+
 import fr.steren.climbtracker.dummy.ContentStore;
 
 /**
@@ -20,6 +22,9 @@ import fr.steren.climbtracker.dummy.ContentStore;
  */
 public class ClimbSessionListFragment extends ListFragment {
 
+    private Firebase mFirebaseRef;
+
+    private ClimbListAdapter mListAdapter;
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -70,12 +75,13 @@ public class ClimbSessionListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<Climb>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                ContentStore.ITEMS));
+        mFirebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
+        mFirebaseRef = mFirebaseRef.child("climbs");
+
+        // Tell our list adapter that we only want 50 messages at a time
+        mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50), getActivity(), R.layout.climb_item);
+        setListAdapter(mListAdapter);
+
     }
 
     @Override
@@ -115,7 +121,7 @@ public class ClimbSessionListFragment extends ListFragment {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(ContentStore.ITEMS.get(position));
+        mCallbacks.onItemSelected(mListAdapter.getItem(position));
     }
 
     @Override

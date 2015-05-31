@@ -5,4 +5,6 @@
 
     <string name="title_climbsession_detail">Climbing session</string>
 
+    <string name="firebase_url">https://climb-tracker.firebaseio.com/</string>
+
 </resources>
