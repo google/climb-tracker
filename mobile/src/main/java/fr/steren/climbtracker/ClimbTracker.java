@@ -219,8 +219,7 @@ public class ClimbTracker extends FragmentActivity
 
                     @Override
                     public void onAuthenticationError(FirebaseError firebaseError) {
-                        // TODO show error
-                        // Toast.makeText(this, firebaseError.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ClimbTracker.this, firebaseError.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
             }

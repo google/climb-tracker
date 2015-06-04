@@ -3,6 +3,7 @@ package fr.steren.climbtracker;
 import android.net.Uri;
 import android.util.Log;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.data.FreezableUtils;
@@ -56,10 +57,14 @@ public class DataLayerListenerService extends WearableListenerService {
                 if (routeGradeLabel != null) {
                     Log.d(TAG, "New Climb, grade : " + routeGradeLabel);
 
-                    Climb newClimb = new Climb(new Date(), routeGradeLabel);
-
-
-                    mFirebaseRef.child("climbs").push().setValue(newClimb);
+                    AuthData authData = mFirebaseRef.getAuth();
+                    if (authData != null) {
+                        Climb newClimb = new Climb(new Date(), routeGradeLabel);
+                        mFirebaseRef.child("users")
+                                .child(authData.getUid())
+                                .child("climbs")
+                                .push().setValue(newClimb);
+                    }
                 }
             }
         }

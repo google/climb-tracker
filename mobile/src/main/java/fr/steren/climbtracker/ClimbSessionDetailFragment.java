@@ -2,7 +2,6 @@ package fr.steren.climbtracker;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,6 @@ import android.widget.TextView;
 import com.firebase.client.Firebase;
 
 import java.util.Date;
-
-import fr.steren.climbtracker.dummy.ContentStore;
 
 /**
  * A fragment representing a single ClimbSession detail screen.
@@ -63,7 +60,7 @@ public class ClimbSessionDetailFragment extends Fragment {
         }
 
         if (getArguments().containsKey(ARG_CLIMB_ID)) {
-            mItem = ContentStore.ITEM_MAP.get(getArguments().getString(ARG_CLIMB_ID));
+            // TODO fetch Firefbase data
         }
     }
 

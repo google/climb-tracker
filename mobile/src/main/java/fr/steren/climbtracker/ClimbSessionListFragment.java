@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
-
-import fr.steren.climbtracker.dummy.ContentStore;
 
 /**
  * A list fragment representing a list of ClimbSessions. This fragment
@@ -76,12 +74,19 @@ public class ClimbSessionListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         mFirebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
-        mFirebaseRef = mFirebaseRef.child("climbs");
-        mFirebaseRef.keepSynced(true);
 
-        // Tell our list adapter that we only want 50 messages at a time
-        mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50), getActivity(), R.layout.climb_item);
-        setListAdapter(mListAdapter);
+        mFirebaseRef.addAuthStateListener(new Firebase.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(AuthData authData) {
+                if (authData != null) {
+                    Firebase ref = mFirebaseRef.child("users").child(authData.getUid());
+                    ref.keepSynced(true);
+                    // Tell our list adapter that we only want 50 messages at a time
+                    mListAdapter = new ClimbListAdapter(ref.child("climbs").limitToFirst(50).orderByChild("date"), getActivity(), R.layout.climb_item);
+                    setListAdapter(mListAdapter);
+                }
+            }
+        });
 
     }
 
