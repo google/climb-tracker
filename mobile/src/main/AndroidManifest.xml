@@ -27,6 +27,14 @@
         </activity>
 
         <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_pref_activityname">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".ClimbSessionDetailActivity"
             android:label="@string/title_climbsession_detail"
             android:parentActivityName=".ClimbTracker" >

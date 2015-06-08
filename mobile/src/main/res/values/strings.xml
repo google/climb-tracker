@@ -7,4 +7,9 @@
 
     <string name="firebase_url">https://climb-tracker.firebaseio.com/</string>
 
+    <string name="pref_gradeSystemType">Grade system</string>
+
+    <string name="pref_gradeSystemType_default">uuia</string>
+    <string name="title_pref_activityname">Preferences</string>
+
 </resources>

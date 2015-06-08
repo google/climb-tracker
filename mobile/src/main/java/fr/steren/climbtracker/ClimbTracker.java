@@ -2,8 +2,10 @@ package fr.steren.climbtracker;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -44,7 +46,9 @@ import java.io.IOException;
  * to listen for item selections.
  */
 public class ClimbTracker extends FragmentActivity
-        implements ClimbSessionListFragment.Callbacks, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        implements ClimbSessionListFragment.Callbacks, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = ClimbTracker.class.getSimpleName();
 
@@ -69,6 +73,8 @@ public class ClimbTracker extends FragmentActivity
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
+
+    private static final String PREF_GRAD_SYSTEM_TYPE = "pref_gradeSystemType";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +101,11 @@ public class ClimbTracker extends FragmentActivity
         });
 
 
+        AuthData authData = firebaseRef.getAuth();
+        if(authData == null) {
+            mGoogleApiClient.connect();
+        }
+
         if (findViewById(R.id.climbsession_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-large and
@@ -116,6 +127,11 @@ public class ClimbTracker extends FragmentActivity
             @Override
             public void onClick(View v) {
                 // TODO: Display Climb creation fragment.
+
+                // TODO: this is just for testing, start the Settings from a menu.
+                Intent intent = new Intent(ClimbTracker.this, SettingsActivity.class);
+                startActivity(intent);
+
                 Snackbar.make(coordinatorLayout, "Climb saved", Snackbar.LENGTH_LONG).setAction("Action", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -125,20 +141,19 @@ public class ClimbTracker extends FragmentActivity
             }
         });
 
-        // TODO: If exposing deep links into your app, handle intents here.
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+
+        CheckPreferenceAndSendToWear();
     }
 
-    protected void onStart() {
-        Log.d(LOG_TAG, "onStart");
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
+    private void CheckPreferenceAndSendToWear() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String gradeSystemTypePref = sharedPref.getString(PREF_GRAD_SYSTEM_TYPE, "uuia");
 
-    protected void onStop() {
-        super.onStop();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
+        // TODO Send the preference to the watch
     }
 
     /**
@@ -263,5 +278,10 @@ public class ClimbTracker extends FragmentActivity
             detailIntent.putExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, climb.getDate().getTime());
             startActivity(detailIntent);
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        CheckPreferenceAndSendToWear();
     }
 }
