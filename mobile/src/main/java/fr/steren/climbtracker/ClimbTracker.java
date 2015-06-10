@@ -9,8 +9,12 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,6 +31,7 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 
 import java.io.IOException;
+import java.util.Date;
 
 
 /**
@@ -45,10 +50,11 @@ import java.io.IOException;
  * {@link ClimbSessionListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class ClimbTracker extends FragmentActivity
+public class ClimbTracker extends AppCompatActivity
         implements ClimbSessionListFragment.Callbacks, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        GradePickerFragment.GradeDialogListener {
 
     private static final String LOG_TAG = ClimbTracker.class.getSimpleName();
 
@@ -59,6 +65,9 @@ public class ClimbTracker extends FragmentActivity
     private boolean mTwoPane;
 
     private Firebase firebaseRef;
+
+    /** reference to the potential last added climb */
+    private Firebase mNewClimbRef;
 
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
@@ -121,23 +130,11 @@ public class ClimbTracker extends FragmentActivity
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Display Climb creation fragment.
-
-                // TODO: this is just for testing, start the Settings from a menu.
-                Intent intent = new Intent(ClimbTracker.this, SettingsActivity.class);
-                startActivity(intent);
-
-                Snackbar.make(coordinatorLayout, "Climb saved", Snackbar.LENGTH_LONG).setAction("Action", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                }).show();
+                DialogFragment gradePickerFragment = new GradePickerFragment();
+                gradePickerFragment.show(getSupportFragmentManager(), "gradePicker");
             }
         });
 
@@ -154,6 +151,29 @@ public class ClimbTracker extends FragmentActivity
         String gradeSystemTypePref = sharedPref.getString(PREF_GRAD_SYSTEM_TYPE, "uuia");
 
         // TODO Send the preference to the watch
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(ClimbTracker.this, SettingsActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.action_disconnect) {
+            firebaseRef.unauth();
+            mGoogleApiClient.disconnect();
+            mGoogleApiClient.connect();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -283,5 +303,23 @@ public class ClimbTracker extends FragmentActivity
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         CheckPreferenceAndSendToWear();
+    }
+
+    @Override
+    public void onGradeSelected(String grade) {
+        Climb newClimb = new Climb(new Date(), grade);
+        mNewClimbRef = firebaseRef.child("users")
+                .child(mAuthData.getUid())
+                .child("climbs")
+                .push();
+        mNewClimbRef.setValue(newClimb);
+
+        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
+        Snackbar.make(coordinatorLayout, R.string.climb_confirmation, Snackbar.LENGTH_LONG).setAction(R.string.climb_save_undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNewClimbRef.removeValue();
+            }
+        }).show();
     }
 }
