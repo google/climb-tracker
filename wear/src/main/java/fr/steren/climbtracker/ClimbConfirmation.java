@@ -16,6 +16,8 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.UUID;
+
 public class ClimbConfirmation extends Activity implements
         DelayedConfirmationView.DelayedConfirmationListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -84,7 +86,8 @@ public class ClimbConfirmation extends Activity implements
     }
 
     private void saveClimb() {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create(CLIMB_PATH);
+        // Create a unique identifier for this data item
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create(CLIMB_PATH + '/' + UUID.randomUUID());
         putDataMapReq.getDataMap().putString(ROUTE_GRADE_LABEL_KEY, routeGradeLabelToSave);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);

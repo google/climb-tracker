@@ -51,7 +51,7 @@ public class DataLayerListenerService extends WearableListenerService {
             Uri uri = event.getDataItem().getUri();
             String path = uri.getPath();
 
-            if (CLIMB_PATH.equals(path)) {
+            if (path.startsWith(CLIMB_PATH)) {
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
                 String routeGradeLabel = dataMapItem.getDataMap().getString(ROUTE_GRADE_LABEL_KEY);
                 if (routeGradeLabel != null) {
