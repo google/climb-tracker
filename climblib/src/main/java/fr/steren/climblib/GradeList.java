@@ -1,4 +1,4 @@
-package fr.steren.climbtracker;
+package fr.steren.climblib;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -10,7 +10,7 @@ public class GradeList {
 
     private ArrayList<Grade> grades;
 
-    GradeList(Context context) {
+    public GradeList(Context context) {
         grades = new ArrayList<Grade>();
 
         // load a resource file containing the grades definition
@@ -21,11 +21,24 @@ public class GradeList {
         }
     }
 
-    Grade get(int index) {
+    public static ArrayList<String> getGradeStringArray(Context context) {
+        Resources res = context.getResources();
+        TypedArray gradeArray = res.obtainTypedArray(R.array.grades_uuia);
+
+        ArrayList<String> result = new ArrayList<String>();
+
+        for( int i = 0; i < gradeArray.length(); i++) {
+            result.add(gradeArray.getString(i));
+        }
+
+        return result;
+    }
+
+    public Grade get(int index) {
         return grades.get(index);
     }
 
-    int size() {
+    public int size() {
         return grades.size();
     }
 

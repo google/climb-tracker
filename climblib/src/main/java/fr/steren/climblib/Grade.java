@@ -1,4 +1,4 @@
-package fr.steren.climbtracker;
+package fr.steren.climblib;
 
 public class Grade {
     public final String label;

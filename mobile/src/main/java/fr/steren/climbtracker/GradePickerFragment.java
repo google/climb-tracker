@@ -3,11 +3,15 @@ package fr.steren.climbtracker;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import java.util.ArrayList;
+
+import fr.steren.climblib.Grade;
+import fr.steren.climblib.GradeList;
 
 public class GradePickerFragment extends DialogFragment {
 
@@ -26,13 +30,16 @@ public class GradePickerFragment extends DialogFragment {
         mGradeList = new GradeList((Activity) mListener);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.pick_grade)
-            .setItems(R.array.grades_uuia, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    mListener.onGradeSelected(mGradeList.get(which).label);
-                }
 
-            });
+        ArrayList<String> grades = GradeList.getGradeStringArray((Activity) mListener);
+        CharSequence[] cs = grades.toArray(new CharSequence[grades.size()]);
+        builder.setTitle(R.string.pick_grade)
+            .setItems(cs, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mListener.onGradeSelected(mGradeList.get(which).label);
+                        }
+
+                    });
 
         return builder.create();
     }

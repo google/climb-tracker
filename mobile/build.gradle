@@ -32,4 +32,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:6.5.87'
     compile 'com.firebase:firebase-client-android:2.3.0+'
     compile 'com.android.support:design:22.2.0'
+    compile project(':climblib')
 }

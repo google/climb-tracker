@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import fr.steren.climblib.GradeList;
+
 public class ClimbTrackerWear extends Activity implements WearableListView.ClickListener {
     private static final int SAMPLE_NOTIFICATION_ID = 0;
     private GradeList gradeList;
