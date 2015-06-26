@@ -8,9 +8,9 @@
     <string name="title_climbsession_detail">Climbing session</string>
 
     <string name="pref_gradeSystemType">Grade system</string>
-
     <string name="pref_gradeSystem_default">uuia</string>
-    <string name="title_pref_activityname">Preferences</string>
+
+    <string name="title_pref_activityname">Settings</string>
     <string name="pick_grade">Select grade</string>
     <string name="climb_confirmation">Climb saved</string>
     <string name="climb_save_undo">Undo</string>
