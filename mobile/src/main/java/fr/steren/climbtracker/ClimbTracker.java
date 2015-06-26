@@ -10,7 +10,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -29,9 +28,15 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 
 import java.io.IOException;
 import java.util.Date;
+
+import fr.steren.climblib.GradeList;
+import fr.steren.climblib.Path;
 
 
 /**
@@ -72,6 +77,9 @@ public class ClimbTracker extends AppCompatActivity
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
 
+    /* Client used to interact with Wear APIs. */
+    private GoogleApiClient mGoogleApiWearClient;
+
     /* Data from the authenticated user */
     private AuthData mAuthData;
 
@@ -82,8 +90,6 @@ public class ClimbTracker extends AppCompatActivity
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
-
-    private static final String PREF_GRAD_SYSTEM_TYPE = "pref_gradeSystemType";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +105,11 @@ public class ClimbTracker extends AppCompatActivity
                 .addApi(Plus.API)
                 .addScope(new Scope(Scopes.PROFILE))
                 .build();
+
+        mGoogleApiWearClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .build();
+        mGoogleApiWearClient.connect();
 
         /* Check if the user is authenticated with Firebase already. If this is the case we can set the authenticated
          * user and hide hide any login buttons */
@@ -143,14 +154,16 @@ public class ClimbTracker extends AppCompatActivity
         PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this);
 
-        CheckPreferenceAndSendToWear();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String gradeSystemTypePref = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
+        sendGradeSystemToWear(gradeSystemTypePref);
     }
 
-    private void CheckPreferenceAndSendToWear() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String gradeSystemTypePref = sharedPref.getString(PREF_GRAD_SYSTEM_TYPE, "uuia");
-
-        // TODO Send the preference to the watch
+    private void sendGradeSystemToWear(String system) {
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create(Path.GRADE_SYSTEM);
+        putDataMapReq.getDataMap().putString(Path.GRADE_SYSTEM_KEY, system);
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        Wearable.DataApi.putDataItem(mGoogleApiWearClient, putDataReq);
     }
 
     @Override
@@ -302,12 +315,18 @@ public class ClimbTracker extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        CheckPreferenceAndSendToWear();
+        if(key.equals(Path.PREF_GRAD_SYSTEM_TYPE)) {
+            String gradeSystemTypePref = sharedPreferences.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
+            sendGradeSystemToWear(gradeSystemTypePref);
+        }
     }
 
     @Override
     public void onGradeSelected(String grade) {
-        Climb newClimb = new Climb(new Date(), grade);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String gradeSystemType = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
+
+        Climb newClimb = new Climb(new Date(), grade, gradeSystemType);
         mNewClimbRef = firebaseRef.child("users")
                 .child(mAuthData.getUid())
                 .child("climbs")

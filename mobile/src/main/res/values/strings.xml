@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="firebase_url">https://climb-tracker.firebaseio.com/</string>
+
     <string name="app_name">Climb Tracker</string>
 
     <string name="title_climbsession_detail">Climbing session</string>
 
-    <string name="firebase_url">https://climb-tracker.firebaseio.com/</string>
-
     <string name="pref_gradeSystemType">Grade system</string>
 
-    <string name="pref_gradeSystemType_default">uuia</string>
+    <string name="pref_gradeSystem_default">uuia</string>
     <string name="title_pref_activityname">Preferences</string>
     <string name="pick_grade">Select grade</string>
     <string name="climb_confirmation">Climb saved</string>

@@ -3,18 +3,17 @@ package fr.steren.climbtracker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.wearable.activity.ConfirmationActivity;
+import android.preference.PreferenceManager;
 import android.support.wearable.view.DelayedConfirmationView;
 import android.support.wearable.view.WearableListView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import fr.steren.climblib.GradeList;
+import fr.steren.climblib.Path;
 
 public class ClimbTrackerWear extends Activity implements WearableListView.ClickListener {
     private static final int SAMPLE_NOTIFICATION_ID = 0;
@@ -27,7 +26,10 @@ public class ClimbTrackerWear extends Activity implements WearableListView.Click
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        gradeList = new GradeList(this);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String gradeSystemTypePref = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
+
+        gradeList = new GradeList(this, gradeSystemTypePref);
 
         setContentView(R.layout.activity_climb_tracker_wear);
 

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="pref_syncConnectionTypes_values">
+    <string-array name="pref_gradeSystems_values">
         <item>uuia</item>
         <item>french</item>
     </string-array>
 
-    <string-array name="pref_syncConnectionTypes_entries">
+    <string-array name="pref_gradeSystems_entries">
         <item>UUIA (6, 6+, 7-, ...)</item>
         <item>French (6a, 6a+, ...)</item>
     </string-array>

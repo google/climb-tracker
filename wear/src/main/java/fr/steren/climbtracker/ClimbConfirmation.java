@@ -18,14 +18,14 @@ import com.google.android.gms.wearable.Wearable;
 
 import java.util.UUID;
 
+import fr.steren.climblib.Path;
+
 public class ClimbConfirmation extends Activity implements
         DelayedConfirmationView.DelayedConfirmationListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "ClimbConfirmation";
-    private static final String CLIMB_PATH = "/climb";
-    private static final String ROUTE_GRADE_LABEL_KEY = "fr.steren.climbtracker.key.routegradelabel";
 
     private DelayedConfirmationView mDelayedView;
 
@@ -87,8 +87,8 @@ public class ClimbConfirmation extends Activity implements
 
     private void saveClimb() {
         // Create a unique identifier for this data item
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create(CLIMB_PATH + '/' + UUID.randomUUID());
-        putDataMapReq.getDataMap().putString(ROUTE_GRADE_LABEL_KEY, routeGradeLabelToSave);
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create(Path.CLIMB + '/' + UUID.randomUUID());
+        putDataMapReq.getDataMap().putString(Path.ROUTE_GRADE_LABEL_KEY, routeGradeLabelToSave);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
     }

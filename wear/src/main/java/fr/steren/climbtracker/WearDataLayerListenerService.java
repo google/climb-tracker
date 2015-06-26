@@ -1,10 +1,10 @@
 package fr.steren.climbtracker;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.data.FreezableUtils;
 import com.google.android.gms.wearable.DataEvent;
@@ -13,22 +13,18 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 
-import java.util.Date;
 import java.util.List;
+
+import fr.steren.climblib.Path;
 
 /**
  * Listens to DataItems
  */
-public class DataLayerListenerService extends WearableListenerService {
+public class WearDataLayerListenerService extends WearableListenerService {
 
-    private static final String TAG = "DataLayerListener";
-
-    private static final String CLIMB_PATH = "/climb";
-    private static final String ROUTE_GRADE_LABEL_KEY = "fr.steren.climbtracker.key.routegradelabel";
+    private static final String TAG = "WearDataLayerListener";
 
     private GoogleApiClient mGoogleApiClient;
-
-    private Firebase mFirebaseRef;
 
     @Override
     public void onCreate() {
@@ -37,8 +33,6 @@ public class DataLayerListenerService extends WearableListenerService {
                 .addApi(Wearable.API)
                 .build();
         mGoogleApiClient.connect();
-
-        mFirebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
     }
 
     @Override
@@ -51,20 +45,14 @@ public class DataLayerListenerService extends WearableListenerService {
             Uri uri = event.getDataItem().getUri();
             String path = uri.getPath();
 
-            if (path.startsWith(CLIMB_PATH)) {
+            if (path.equals(Path.GRADE_SYSTEM)) {
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-                String routeGradeLabel = dataMapItem.getDataMap().getString(ROUTE_GRADE_LABEL_KEY);
-                if (routeGradeLabel != null) {
-                    Log.d(TAG, "New Climb, grade : " + routeGradeLabel);
-
-                    AuthData authData = mFirebaseRef.getAuth();
-                    if (authData != null) {
-                        Climb newClimb = new Climb(new Date(), routeGradeLabel);
-                        mFirebaseRef.child("users")
-                                .child(authData.getUid())
-                                .child("climbs")
-                                .push().setValue(newClimb);
-                    }
+                String gradeSystem = dataMapItem.getDataMap().getString(Path.GRADE_SYSTEM_KEY);
+                if (gradeSystem != null) {
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString(Path.PREF_GRAD_SYSTEM_TYPE, gradeSystem);
+                    editor.commit();
                 }
             }
         }

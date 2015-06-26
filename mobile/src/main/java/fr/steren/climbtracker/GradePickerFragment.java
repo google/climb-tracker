@@ -3,15 +3,16 @@ package fr.steren.climbtracker;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.res.TypedArray;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import java.util.ArrayList;
 
-import fr.steren.climblib.Grade;
 import fr.steren.climblib.GradeList;
+import fr.steren.climblib.Path;
 
 public class GradePickerFragment extends DialogFragment {
 
@@ -27,11 +28,14 @@ public class GradePickerFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // TODO: create a custom layout with a nicer Grade selector (centered?), see http://developer.android.com/guide/topics/ui/dialogs.html
 
-        mGradeList = new GradeList((Activity) mListener);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences((Activity) mListener);
+        String gradeSystemTypePref = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
+
+        mGradeList = new GradeList((Activity) mListener, gradeSystemTypePref);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        ArrayList<String> grades = GradeList.getGradeStringArray((Activity) mListener);
+        ArrayList<String> grades = mGradeList.getGradeStringList();
         CharSequence[] cs = grades.toArray(new CharSequence[grades.size()]);
         builder.setTitle(R.string.pick_grade)
             .setItems(cs, new DialogInterface.OnClickListener() {

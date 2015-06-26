@@ -10,28 +10,39 @@ public class GradeList {
 
     private ArrayList<Grade> grades;
 
-    public GradeList(Context context) {
+    public static final String SYSTEM_UUIA = "uuia";
+    public static final String SYSTEM_FRENCH = "french";
+
+    public static final String SYSTEM_DEFAULT = SYSTEM_UUIA;
+
+    public GradeList(Context context, String gradeSystem) {
         grades = new ArrayList<Grade>();
 
         // load a resource file containing the grades definition
         Resources res = context.getResources();
-        TypedArray gradeDefinition = res.obtainTypedArray(R.array.grades_uuia);
+        TypedArray gradeDefinition = res.obtainTypedArray(getGradeResourceFromSystem(gradeSystem));
         for( int i = 0; i < gradeDefinition.length(); i++) {
             grades.add(new Grade(gradeDefinition.getString(i)));
         }
     }
 
-    public static ArrayList<String> getGradeStringArray(Context context) {
-        Resources res = context.getResources();
-        TypedArray gradeArray = res.obtainTypedArray(R.array.grades_uuia);
-
+    public ArrayList<String> getGradeStringList() {
         ArrayList<String> result = new ArrayList<String>();
-
-        for( int i = 0; i < gradeArray.length(); i++) {
-            result.add(gradeArray.getString(i));
+        for( Grade g : grades) {
+            result.add(g.label);
         }
-
         return result;
+    }
+
+    private int getGradeResourceFromSystem(String system) {
+        switch (system) {
+            case SYSTEM_UUIA:
+                return R.array.grades_uuia;
+            case SYSTEM_FRENCH:
+                return R.array.grades_french;
+            default:
+                return R.array.grades_uuia;
+        }
     }
 
     public Grade get(int index) {
