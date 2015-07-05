@@ -16,6 +16,7 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.Date;
 import java.util.UUID;
 
 import fr.steren.climblib.Path;
@@ -89,6 +90,7 @@ public class ClimbConfirmation extends Activity implements
         // Create a unique identifier for this data item
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create(Path.CLIMB + '/' + UUID.randomUUID());
         putDataMapReq.getDataMap().putString(Path.ROUTE_GRADE_LABEL_KEY, routeGradeLabelToSave);
+        putDataMapReq.getDataMap().putLong(Path.CLIMB_DATE_KEY, (new Date().getTime()));
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
     }

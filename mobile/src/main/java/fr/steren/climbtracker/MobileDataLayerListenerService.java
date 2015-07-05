@@ -60,12 +60,14 @@ public class MobileDataLayerListenerService extends WearableListenerService {
             if (path.startsWith(Path.CLIMB)) {
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
                 String routeGradeLabel = dataMapItem.getDataMap().getString(Path.ROUTE_GRADE_LABEL_KEY);
+                Date climbDate = new Date(dataMapItem.getDataMap().getLong(Path.CLIMB_DATE_KEY));
+
                 if (routeGradeLabel != null) {
-                    Log.d(TAG, "New Climb, grade : " + routeGradeLabel);
+                    Log.d(TAG, "New Climb, grade : " + routeGradeLabel + " " + climbDate.toString());
 
                     AuthData authData = mFirebaseRef.getAuth();
                     if (authData != null) {
-                        Climb newClimb = new Climb(new Date(), routeGradeLabel, gradeSystemType);
+                        Climb newClimb = new Climb(climbDate, routeGradeLabel, gradeSystemType);
                         mFirebaseRef.child("users")
                                 .child(authData.getUid())
                                 .child("climbs")
