@@ -7,8 +7,7 @@ public class Climb {
     private String grade;
     private String system;
 
-    /** to replace by Firebase ID */
-    public String id;
+    private String key;
 
     // Required default constructor for Firebase object mapping
     @SuppressWarnings("unused")
@@ -21,8 +20,8 @@ public class Climb {
         this.system = system;
     }
 
-    public Climb(String id, Date date, String grade, String system) {
-        this.id = id;
+    public Climb(String key, Date date, String grade, String system) {
+        this.key = key;
         this.date = date;
         this.grade = grade;
         this.system = system;
@@ -38,6 +37,13 @@ public class Climb {
 
     public String getSystem() {
         return system;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+    public String getKey() {
+        return key;
     }
 
     @Override

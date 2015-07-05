@@ -20,9 +20,11 @@ import com.firebase.client.Firebase;
  */
 public class ClimbSessionListFragment extends ListFragment {
 
+    private static final int CLIMB_LIMIT = 500;
+
     private Firebase mFirebaseRef;
 
-    private ClimbListAdapter mListAdapter;
+    private ClimbSessionListAdapter mListAdapter;
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -49,7 +51,7 @@ public class ClimbSessionListFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(Climb climb);
+        public void onItemSelected(ClimbSession session);
     }
 
     /**
@@ -58,7 +60,7 @@ public class ClimbSessionListFragment extends ListFragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(Climb climb) {
+        public void onItemSelected(ClimbSession session) {
         }
     };
 
@@ -82,7 +84,7 @@ public class ClimbSessionListFragment extends ListFragment {
                     Firebase ref = mFirebaseRef.child("users").child(authData.getUid());
                     ref.keepSynced(true);
                     // Tell our list adapter that we only want 50 messages at a time
-                    mListAdapter = new ClimbListAdapter(ref.child("climbs").limitToFirst(50).orderByChild("date"), getActivity(), R.layout.climb_item);
+                    mListAdapter = new ClimbSessionListAdapter(ref.child("climbs").limitToFirst(CLIMB_LIMIT).orderByChild("date"), R.layout.climbsession_item, getActivity());
                     setListAdapter(mListAdapter);
                 }
             }

@@ -8,7 +8,7 @@ import com.firebase.client.Query;
 
 public class ClimbListAdapter extends FirebaseListAdapter<Climb> {
 
-    public ClimbListAdapter(Query ref, Activity activity, int layout) {
+    public ClimbListAdapter(Query ref, int layout, Activity activity) {
         super(ref, Climb.class, layout, activity);
     }
 

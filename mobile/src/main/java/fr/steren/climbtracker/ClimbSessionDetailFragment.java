@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 
 import java.util.Date;
@@ -26,13 +27,14 @@ public class ClimbSessionDetailFragment extends Fragment {
      * The fragment argument representing the climb ID that this fragment
      * represents.
      */
-    public static final String ARG_CLIMB_ID = "climb_id";
+    public static final String ARG_FIRST_CLIMB_KEY = "first_climb_key";
+    public static final String ARG_LAST_CLIMB_KEY = "last_climb_key";
     public static final String ARG_CLIMB_TIME = "climb_time";
 
     /**
      * The dummy content this fragment is presenting.
      */
-    private Climb mItem;
+    private ClimbSession mSession;
 
     private Date mDay;
 
@@ -50,18 +52,25 @@ public class ClimbSessionDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mFirebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
-        mFirebaseRef = mFirebaseRef.child("climbs");
+        AuthData authData = mFirebaseRef.getAuth();
+        mFirebaseRef = mFirebaseRef.child("users")
+                .child(authData.getUid())
+                .child("climbs");
 
-        // retrieve the date of the selected item, and fetch all item of the same day.
+
+
+        // For faster title diplay, get the date of the first climb
         if (getArguments().containsKey(ARG_CLIMB_TIME)) {
-            mDay = new Date(getArguments().getLong(ARG_CLIMB_TIME));
-
-            // TODO fetch all items of this day
+            long time = getArguments().getLong(ARG_CLIMB_TIME);
+            mDay = new Date(time);
         }
 
-        if (getArguments().containsKey(ARG_CLIMB_ID)) {
-            // TODO fetch Firefbase data
-        }
+        String climbKey = getArguments().getString(ARG_FIRST_CLIMB_KEY);
+
+        // TODO see if we could use endAt(), passed as argument.
+        ClimbListAdapter listAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).startAt(climbKey).orderByChild("date"), R.layout.climb_item, getActivity());
+        //setListAdapter(listAdapter);
+
     }
 
     @Override
@@ -73,8 +82,8 @@ public class ClimbSessionDetailFragment extends Fragment {
             ((TextView) rootView.findViewById(R.id.climbsession_date)).setText(mDay.toString());
         }
 
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.climbsession_detail)).setText(mItem.toString());
+        if (mSession != null) {
+            //((TextView) rootView.findViewById(R.id.climbsession_detail)).setText(mSession.toString());
         }
 
         return rootView;

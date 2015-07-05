@@ -289,14 +289,14 @@ public class ClimbTracker extends AppCompatActivity
      * indicating that the item was selected.
      */
     @Override
-    public void onItemSelected(Climb climb) {
+    public void onItemSelected(ClimbSession session) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ClimbSessionDetailFragment.ARG_CLIMB_ID, climb.id);
-            arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME, climb.getDate().getTime());
+            arguments.putString(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY, session.getFirstClimbKey());
+            arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME, session.getDate().getTime());
             ClimbSessionDetailFragment fragment = new ClimbSessionDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -307,11 +307,12 @@ public class ClimbTracker extends AppCompatActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, ClimbSessionDetailActivity.class);
-            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_CLIMB_ID, climb.id);
-            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, climb.getDate().getTime());
+            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY, session.getFirstClimbKey());
+            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, session.getDate().getTime());
             startActivity(detailIntent);
         }
     }
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {

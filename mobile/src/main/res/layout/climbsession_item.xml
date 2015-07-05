@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="72dp"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Yesterday"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+    />
+
+    <TextView
+        android:id="@+id/grades"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="6- 6 6+ 6+ 7- 6"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+    />
+
+</LinearLayout>

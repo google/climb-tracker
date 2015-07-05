@@ -2,7 +2,6 @@ package fr.steren.climbtracker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -39,10 +38,11 @@ public class ClimbSessionDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ClimbSessionDetailFragment.ARG_CLIMB_ID,
-                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_CLIMB_ID));
-            arguments.putString(ClimbSessionDetailFragment.ARG_CLIMB_TIME,
-                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME));
+            arguments.putString(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY,
+                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY));
+            arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME,
+                    getIntent().getLongExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, 0));
+
             ClimbSessionDetailFragment fragment = new ClimbSessionDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
