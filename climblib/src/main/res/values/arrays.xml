@@ -2,16 +2,51 @@
 <resources>
 
     <string-array name="pref_gradeSystems_values">
+        <item>yds</item>
         <item>uuia</item>
         <item>french</item>
+        <item>saxon</item>
     </string-array>
 
     <string-array name="pref_gradeSystems_entries">
+        <item>YDS (USA) (5.10a, 5.10b, ...)</item>
         <item>UUIA (6, 6+, 7-, ...)</item>
         <item>French (6a, 6a+, ...)</item>
+        <item>Saxon (VIIa, VIIb, ...)</item>
     </string-array>
 
     <!-- see https://en.wikipedia.org/wiki/Grade_(climbing) -->
+    <array name="grades_yds">
+        <item>5.4</item>
+        <item>5.5</item>
+        <item>5.6</item>
+        <item>5.7</item>
+        <item>5.8</item>
+        <item>5.9</item>
+        <item>5.10a</item>
+        <item>5.10b</item>
+        <item>5.10c</item>
+        <item>5.10d</item>
+        <item>5.11a</item>
+        <item>5.11b</item>
+        <item>5.11c</item>
+        <item>5.11d</item>
+        <item>5.12a</item>
+        <item>5.12b</item>
+        <item>5.12c</item>
+        <item>5.12d</item>
+        <item>5.13a</item>
+        <item>5.13b</item>
+        <item>5.13c</item>
+        <item>5.13d</item>
+        <item>5.14a</item>
+        <item>5.14b</item>
+        <item>5.14c</item>
+        <item>5.14d</item>
+        <item>5.15a</item>
+        <item>5.15b</item>
+        <item>5.15c</item>
+    </array>
     <array name="grades_uuia">
         <item>3</item>
         <item>4</item>
@@ -64,5 +99,25 @@
         <item>9a+</item>
         <item>9b</item>
         <item>9b+</item>
+    </array>
+    <array name="grades_saxon">
+        <item>IV</item>
+        <item>V</item>
+        <item>VI</item>
+        <item>VIIa</item>
+        <item>VIIb</item>
+        <item>VIIc</item>
+        <item>VIIIa</item>
+        <item>VIIIb</item>
+        <item>VIIIc</item>
+        <item>IXa</item>
+        <item>IXb</item>
+        <item>IXc</item>
+        <item>Xa</item>
+        <item>Xb</item>
+        <item>Xc</item>
+        <item>XIa</item>
+        <item>XIb</item>
+        <item>XIc</item>
     </array>
 </resources>

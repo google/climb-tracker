@@ -22,8 +22,10 @@ public class GradeList {
 
     private ArrayList<Grade> grades;
 
+    public static final String SYSTEM_YDS = "yds";
     public static final String SYSTEM_UUIA = "uuia";
     public static final String SYSTEM_FRENCH = "french";
+    public static final String SYSTEM_SAXON = "saxon";
 
     public static final String SYSTEM_DEFAULT = SYSTEM_UUIA;
 
@@ -48,12 +50,16 @@ public class GradeList {
 
     private int getGradeResourceFromSystem(String system) {
         switch (system) {
+            case SYSTEM_YDS:
+                return R.array.grades_yds;
             case SYSTEM_UUIA:
                 return R.array.grades_uuia;
             case SYSTEM_FRENCH:
                 return R.array.grades_french;
+            case SYSTEM_SAXON:
+                return R.array.grades_saxon;
             default:
-                return R.array.grades_uuia;
+                return R.array.grades_yds;
         }
     }
 
