@@ -67,10 +67,12 @@ public class ClimbSession {
 
 
     /**
-     * Transforms a sorted list of Climbs into a list of ClimSessions
+     * Transforms a list of Climbs into a list of ClimSessions
      * @param climbs list of climbs sorted by date
+     * @return List of sessions, sorted by newest first
      */
     public static List<ClimbSession> climbsToSessions(List<Climb> climbs) {
+        // TODO: only works when the received list is sorted from oldest to latest. Re-write to be order agnostic.
         List<ClimbSession> sessions = new ArrayList<ClimbSession>();
         ClimbSession session = null;
 
@@ -87,6 +89,13 @@ public class ClimbSession {
             }
         }
         sessions.add(session);
-        return sessions;
+
+        // we built a list in the wrong order, reverse it
+        List<ClimbSession> sessionsReversed = new ArrayList<ClimbSession>();
+        for(ClimbSession session1 : sessions) {
+            sessionsReversed.add(0, session1);
+        }
+
+        return sessionsReversed;
     }
 }

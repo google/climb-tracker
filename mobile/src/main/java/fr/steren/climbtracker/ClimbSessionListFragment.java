@@ -95,8 +95,7 @@ public class ClimbSessionListFragment extends ListFragment {
                 if (authData != null) {
                     Firebase ref = mFirebaseRef.child("users").child(authData.getUid());
                     ref.keepSynced(true);
-                    // Tell our list adapter that we only want 50 messages at a time
-                    mListAdapter = new ClimbSessionListAdapter(ref.child("climbs").limitToFirst(CLIMB_LIMIT).orderByChild("date"), R.layout.climbsession_item, getActivity());
+                    mListAdapter = new ClimbSessionListAdapter(ref.child("climbs").limitToLast(CLIMB_LIMIT).orderByChild("date"), R.layout.climbsession_item, getActivity());
                     setListAdapter(mListAdapter);
                 }
             }

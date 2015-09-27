@@ -38,6 +38,7 @@ public class ClimbSessionListAdapter extends BaseAdapter {
     private Query mRef;
     private int mLayout;
     private LayoutInflater mInflater;
+    /** List of climbs with no guarantee of order (theoretically).  */
     private List<Climb> mModels;
     private Map<String, Climb> mModelKeys;
 
