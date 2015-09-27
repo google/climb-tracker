@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.client.AuthData;
@@ -43,14 +44,11 @@ public class ClimbSessionDetailFragment extends Fragment {
     public static final String ARG_LAST_CLIMB_KEY = "last_climb_key";
     public static final String ARG_CLIMB_TIME = "climb_time";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
+    /** Climb session, does not contain the climbs */
     private ClimbSession mSession;
-
-    private Date mDay;
-
     private Firebase mFirebaseRef;
+    private ListView mList;
+    private ClimbListAdapter mListAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -70,19 +68,12 @@ public class ClimbSessionDetailFragment extends Fragment {
                 .child("climbs");
 
 
+        long time = getArguments().getLong(ARG_CLIMB_TIME);
+        mSession = new ClimbSession( new Date(time) );
 
-        // For faster title diplay, get the date of the first climb
-        if (getArguments().containsKey(ARG_CLIMB_TIME)) {
-            long time = getArguments().getLong(ARG_CLIMB_TIME);
-            mDay = new Date(time);
-        }
-
-        String climbKey = getArguments().getString(ARG_FIRST_CLIMB_KEY);
-
-        // TODO see if we could use endAt(), passed as argument.
-        ClimbListAdapter listAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).startAt(climbKey).orderByChild("date"), R.layout.climb_item, getActivity());
-        //setListAdapter(listAdapter);
-
+        String firstClimbKey = getArguments().getString(ARG_FIRST_CLIMB_KEY);
+        String lastClimbKey = getArguments().getString(ARG_LAST_CLIMB_KEY);
+        mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).startAt(firstClimbKey).endAt(lastClimbKey).orderByChild("date"), R.layout.climb_item, getActivity());
     }
 
     @Override
@@ -90,13 +81,9 @@ public class ClimbSessionDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_climbsession_detail, container, false);
 
-        if (mDay != null) {
-            ((TextView) rootView.findViewById(R.id.climbsession_date)).setText(mDay.toString());
-        }
-
-        if (mSession != null) {
-            //((TextView) rootView.findViewById(R.id.climbsession_detail)).setText(mSession.toString());
-        }
+        mList = (ListView) rootView.findViewById(R.id.climbList);
+        mList.setAdapter(mListAdapter);
+        ((TextView) rootView.findViewById(R.id.climbsession_date)).setText(mSession.getReadableDate(getActivity()));
 
         return rootView;
     }

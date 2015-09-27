@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import java.util.Date;
+
 
 /**
  * An activity representing a single ClimbSession detail screen. This
@@ -52,8 +54,14 @@ public class ClimbSessionDetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             arguments.putString(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY,
                     getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY));
-            arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME,
-                    getIntent().getLongExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, 0));
+            arguments.putString(ClimbSessionDetailFragment.ARG_LAST_CLIMB_KEY,
+                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_LAST_CLIMB_KEY));
+            long time = getIntent().getLongExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, 0);
+            arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME, time);
+
+            // set title with the pretty date of this session
+            ClimbSession session = new ClimbSession(new Date(time));
+            setTitle(session.getPrettyDate());
 
             ClimbSessionDetailFragment fragment = new ClimbSessionDetailFragment();
             fragment.setArguments(arguments);

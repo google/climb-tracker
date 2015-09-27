@@ -12,6 +12,11 @@ Copyright 2014 Google Inc. All rights reserved.
 */
 package fr.steren.climbtracker;
 
+import android.content.Context;
+import android.text.format.DateUtils;
+
+import org.ocpsoft.prettytime.PrettyTime;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +54,10 @@ public class ClimbSession {
         return climbs.get(0).getKey();
     }
 
+    public String getLastClimbKey() {
+        return climbs.get(climbs.size() - 1).getKey();
+    }
+
     @Override
     public String toString() {
         return date.toString() + " " + toGradesString();
@@ -64,7 +73,14 @@ public class ClimbSession {
         return result;
     }
 
+    public String getPrettyDate() {
+        PrettyTime p = new PrettyTime();
+        return p.format(getDate());
+    }
 
+    public String getReadableDate(Context context) {
+        return DateUtils.formatDateTime(context, getDate().getTime(), DateUtils.FORMAT_SHOW_DATE);
+    }
 
     /**
      * Transforms a list of Climbs into a list of ClimSessions

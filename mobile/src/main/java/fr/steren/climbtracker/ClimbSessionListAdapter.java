@@ -199,10 +199,8 @@ public class ClimbSessionListAdapter extends BaseAdapter {
      */
     public void populateView(View view, ClimbSession session) {
         // Map a climbsession object to an entry in our listview
-        PrettyTime p = new PrettyTime();
-        String date = p.format(session.getDate());
         TextView dateText = (TextView) view.findViewById(R.id.date);
-        dateText.setText(date);
+        dateText.setText(session.getPrettyDate());
 
         String grades = session.toGradesString();
         TextView gradeText = (TextView) view.findViewById(R.id.grades);

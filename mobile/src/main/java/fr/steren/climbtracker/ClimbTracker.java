@@ -308,6 +308,7 @@ public class ClimbTracker extends AppCompatActivity
             // fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putString(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY, session.getFirstClimbKey());
+            arguments.putString(ClimbSessionDetailFragment.ARG_LAST_CLIMB_KEY, session.getLastClimbKey());
             arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME, session.getDate().getTime());
             ClimbSessionDetailFragment fragment = new ClimbSessionDetailFragment();
             fragment.setArguments(arguments);
@@ -320,6 +321,7 @@ public class ClimbTracker extends AppCompatActivity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, ClimbSessionDetailActivity.class);
             detailIntent.putExtra(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY, session.getFirstClimbKey());
+            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_LAST_CLIMB_KEY, session.getLastClimbKey());
             detailIntent.putExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, session.getDate().getTime());
             startActivity(detailIntent);
         }
