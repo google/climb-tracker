@@ -24,6 +24,8 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +75,21 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
 
                 T model = dataSnapshot.getValue(FirebaseListAdapter.this.mModelClass);
+                // TODO this is a hack.
+                try {
+                    Method setKey = model.getClass().getMethod("setKey", String.class);
+                    setKey.invoke(model, dataSnapshot.getKey());
+                } catch (NoSuchMethodException e) {
+                    // It' ok, do nothing.
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                //if(model instanceof Climb) {
+                //    ((Climb) model).setKey(dataSnapshot.getKey());
+                //}
+
                 mModelKeys.put(dataSnapshot.getKey(), model);
 
                 // Insert into the correct location, based on previousChildName

@@ -12,11 +12,14 @@ Copyright 2014 Google Inc. All rights reserved.
 */
 package fr.steren.climbtracker;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -48,6 +51,9 @@ public class ClimbSessionDetailFragment extends Fragment {
     private Firebase mFirebaseRef;
     private ListView mList;
     private ClimbListAdapter mListAdapter;
+
+    /** The selected Climb, if any */
+    private Climb mSelectedClimb;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -83,6 +89,32 @@ public class ClimbSessionDetailFragment extends Fragment {
         mList = (ListView) rootView.findViewById(R.id.climbList);
         mList.setAdapter(mListAdapter);
         ((TextView) rootView.findViewById(R.id.climbsession_date)).setText(mSession.getReadableDate(getActivity()));
+
+        mList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long id) {
+                mSelectedClimb = (Climb) mList.getItemAtPosition(position);
+
+                // Display a confirmation dialog
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.action_delete_climb_title)
+                        .setMessage(R.string.action_delete_climb_message)
+                        .setPositiveButton(R.string.action_delete_climb_confirm, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // delete this climb
+                                String selectedKey = mSelectedClimb.getKey();
+                                mFirebaseRef.child(selectedKey).removeValue();
+                            }
+                        })
+                        .setNegativeButton(R.string.action_delete_climb_cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Do nothing
+                            }
+                        })
+                        .show();
+
+                return true;
+            }
+        });
 
         return rootView;
     }
