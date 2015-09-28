@@ -310,9 +310,8 @@ public class ClimbTracker extends AppCompatActivity
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY, session.getFirstClimbKey());
-            arguments.putString(ClimbSessionDetailFragment.ARG_LAST_CLIMB_KEY, session.getLastClimbKey());
-            arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME, session.getDate().getTime());
+            arguments.putLong(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_TIME, session.getFirstClimbDate().getTime());
+            arguments.putLong(ClimbSessionDetailFragment.ARG_LAST_CLIMB_TIME, session.getLastClimbDate().getTime());
             ClimbSessionDetailFragment fragment = new ClimbSessionDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -323,9 +322,8 @@ public class ClimbTracker extends AppCompatActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, ClimbSessionDetailActivity.class);
-            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY, session.getFirstClimbKey());
-            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_LAST_CLIMB_KEY, session.getLastClimbKey());
-            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, session.getDate().getTime());
+            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_TIME, session.getFirstClimbDate().getTime());
+            detailIntent.putExtra(ClimbSessionDetailFragment.ARG_LAST_CLIMB_TIME, session.getLastClimbDate().getTime());
             startActivity(detailIntent);
         }
     }

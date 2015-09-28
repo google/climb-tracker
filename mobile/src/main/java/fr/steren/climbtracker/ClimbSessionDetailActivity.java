@@ -52,12 +52,11 @@ public class ClimbSessionDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY,
-                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_KEY));
-            arguments.putString(ClimbSessionDetailFragment.ARG_LAST_CLIMB_KEY,
-                    getIntent().getStringExtra(ClimbSessionDetailFragment.ARG_LAST_CLIMB_KEY));
-            long time = getIntent().getLongExtra(ClimbSessionDetailFragment.ARG_CLIMB_TIME, 0);
-            arguments.putLong(ClimbSessionDetailFragment.ARG_CLIMB_TIME, time);
+            long time = getIntent().getLongExtra(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_TIME, 0);
+            arguments.putLong(ClimbSessionDetailFragment.ARG_FIRST_CLIMB_TIME, time);
+
+            long lastTime = getIntent().getLongExtra(ClimbSessionDetailFragment.ARG_LAST_CLIMB_TIME, 0);
+            arguments.putLong(ClimbSessionDetailFragment.ARG_LAST_CLIMB_TIME, lastTime);
 
             // set title with the pretty date of this session
             ClimbSession session = new ClimbSession(new Date(time));

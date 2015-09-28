@@ -40,9 +40,8 @@ public class ClimbSessionDetailFragment extends Fragment {
      * The fragment argument representing the climb ID that this fragment
      * represents.
      */
-    public static final String ARG_FIRST_CLIMB_KEY = "first_climb_key";
-    public static final String ARG_LAST_CLIMB_KEY = "last_climb_key";
-    public static final String ARG_CLIMB_TIME = "climb_time";
+    public static final String ARG_FIRST_CLIMB_TIME = "first_climb_time";
+    public static final String ARG_LAST_CLIMB_TIME = "last_climb_time";
 
     /** Climb session, does not contain the climbs */
     private ClimbSession mSession;
@@ -68,13 +67,12 @@ public class ClimbSessionDetailFragment extends Fragment {
                 .child("climbs");
 
 
-        long time = getArguments().getLong(ARG_CLIMB_TIME);
+        long time = getArguments().getLong(ARG_FIRST_CLIMB_TIME);
         mSession = new ClimbSession( new Date(time) );
 
-        String firstClimbKey = getArguments().getString(ARG_FIRST_CLIMB_KEY);
-        String lastClimbKey = getArguments().getString(ARG_LAST_CLIMB_KEY);
-        //mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).startAt(firstClimbKey).endAt(lastClimbKey).orderByChild("date"), R.layout.climb_item, getActivity());
-        mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).orderByChild("date").startAt(time), R.layout.climb_item, getActivity());
+        long lastTime = getArguments().getLong(ARG_LAST_CLIMB_TIME);
+
+        mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).orderByChild("date").startAt(time).endAt(lastTime), R.layout.climb_item, getActivity());
     }
 
     @Override

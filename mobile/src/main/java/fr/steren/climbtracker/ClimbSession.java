@@ -50,12 +50,12 @@ public class ClimbSession {
         return climbs;
     }
 
-    public String getFirstClimbKey() {
-        return climbs.get(0).getKey();
+    public Date getFirstClimbDate() {
+        return climbs.get(0).getDate();
     }
 
-    public String getLastClimbKey() {
-        return climbs.get(climbs.size() - 1).getKey();
+    public Date getLastClimbDate() {
+        return climbs.get(climbs.size() - 1).getDate();
     }
 
     @Override
