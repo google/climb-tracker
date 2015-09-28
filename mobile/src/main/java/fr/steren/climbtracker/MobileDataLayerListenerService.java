@@ -13,6 +13,7 @@ Copyright 2014 Google Inc. All rights reserved.
 package fr.steren.climbtracker;
 
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.data.FreezableUtils;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataMapItem;
@@ -40,6 +42,12 @@ public class MobileDataLayerListenerService extends WearableListenerService {
 
     private static final String TAG = "MobileDataLayerListener";
 
+    /** max time between the location is fetched and the time of the climb.
+     * Above this, do not save location.
+     * It means that the wearable has been far from the phone for a long time and location is probably not relevant.
+     * */
+    private static final long MAX_TIME_FOR_LOCATION = 1000 * 60 * 60;
+
     private GoogleApiClient mGoogleApiClient;
 
     private Firebase mFirebaseRef;
@@ -49,6 +57,7 @@ public class MobileDataLayerListenerService extends WearableListenerService {
         super.onCreate();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
+                .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
 
@@ -64,6 +73,8 @@ public class MobileDataLayerListenerService extends WearableListenerService {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String gradeSystemType = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
 
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
         for (DataEvent event : events) {
             Log.d(TAG, "Event: " + event.getDataItem().toString());
             Uri uri = event.getDataItem().getUri();
@@ -74,12 +85,20 @@ public class MobileDataLayerListenerService extends WearableListenerService {
                 String routeGradeLabel = dataMapItem.getDataMap().getString(Path.ROUTE_GRADE_LABEL_KEY);
                 Date climbDate = new Date(dataMapItem.getDataMap().getLong(Path.CLIMB_DATE_KEY));
 
+                // check that climb date and location date are not too far, do not save location if so.
+                double latitude = 0;
+                double longitude = 0;
+                if(lastLocation != null && Math.abs(lastLocation.getTime() - climbDate.getTime()) < MAX_TIME_FOR_LOCATION) {
+                    latitude = lastLocation.getLatitude();
+                    longitude = lastLocation.getLongitude();
+                }
+
                 if (routeGradeLabel != null) {
                     Log.d(TAG, "New Climb, grade : " + routeGradeLabel + " " + climbDate.toString());
 
                     AuthData authData = mFirebaseRef.getAuth();
                     if (authData != null) {
-                        Climb newClimb = new Climb(climbDate, routeGradeLabel, gradeSystemType);
+                        Climb newClimb = new Climb(climbDate, routeGradeLabel, gradeSystemType, latitude, longitude);
                         mFirebaseRef.child("users")
                                 .child(authData.getUid())
                                 .child("climbs")

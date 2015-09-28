@@ -73,7 +73,8 @@ public class ClimbSessionDetailFragment extends Fragment {
 
         String firstClimbKey = getArguments().getString(ARG_FIRST_CLIMB_KEY);
         String lastClimbKey = getArguments().getString(ARG_LAST_CLIMB_KEY);
-        mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).startAt(firstClimbKey).endAt(lastClimbKey).orderByChild("date"), R.layout.climb_item, getActivity());
+        //mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).startAt(firstClimbKey).endAt(lastClimbKey).orderByChild("date"), R.layout.climb_item, getActivity());
+        mListAdapter = new ClimbListAdapter(mFirebaseRef.limitToFirst(50).orderByChild("date").startAt(time), R.layout.climb_item, getActivity());
     }
 
     @Override
@@ -87,4 +88,6 @@ public class ClimbSessionDetailFragment extends Fragment {
 
         return rootView;
     }
+
+    // TODO add onListItemClick to the listView.
 }

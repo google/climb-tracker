@@ -18,6 +18,8 @@ public class Climb {
     private Date date;
     private String grade;
     private String system;
+    private double latitude;
+    private double longitude;
 
     private String key;
 
@@ -26,17 +28,21 @@ public class Climb {
     private Climb() {
     }
 
-    public Climb(Date date, String grade, String system) {
+    public Climb(Date date, String grade, String system, double latitude, double longitude) {
         this.date = date;
         this.grade = grade;
         this.system = system;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
-    public Climb(String key, Date date, String grade, String system) {
+    public Climb(String key, Date date, String grade, String system, double latitude, double longitude) {
         this.key = key;
         this.date = date;
         this.grade = grade;
         this.system = system;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Date getDate() {
@@ -49,6 +55,14 @@ public class Climb {
 
     public String getSystem() {
         return system;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 
     public void setKey(String key) {

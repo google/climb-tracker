@@ -15,6 +15,7 @@ package fr.steren.climbtracker;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -39,6 +40,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
@@ -87,10 +89,10 @@ public class ClimbTracker extends AppCompatActivity
     private Firebase mNewClimbRef;
 
     /* Client used to interact with Google APIs. */
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleAuthApiClient;
 
     /* Client used to interact with Wear APIs. */
-    private GoogleApiClient mGoogleApiWearClient;
+    private GoogleApiClient mGoogleApiClient;
 
     /* Data from the authenticated user */
     private AuthData mAuthData;
@@ -111,17 +113,18 @@ public class ClimbTracker extends AppCompatActivity
         Firebase.setAndroidContext(this);
         firebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleAuthApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
                 .addScope(new Scope(Scopes.PROFILE))
                 .build();
 
-        mGoogleApiWearClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
+                .addApi(LocationServices.API)
                 .build();
-        mGoogleApiWearClient.connect();
+        mGoogleApiClient.connect();
 
         /* Check if the user is authenticated with Firebase already. If this is the case we can set the authenticated
          * user and hide hide any login buttons */
@@ -135,7 +138,7 @@ public class ClimbTracker extends AppCompatActivity
 
         AuthData authData = firebaseRef.getAuth();
         if(authData == null) {
-            mGoogleApiClient.connect();
+            mGoogleAuthApiClient.connect();
         }
 
         if (findViewById(R.id.climbsession_detail_container) != null) {
@@ -175,7 +178,7 @@ public class ClimbTracker extends AppCompatActivity
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create(Path.GRADE_SYSTEM);
         putDataMapReq.getDataMap().putString(Path.GRADE_SYSTEM_KEY, system);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-        Wearable.DataApi.putDataItem(mGoogleApiWearClient, putDataReq);
+        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
     }
 
     @Override
@@ -194,8 +197,8 @@ public class ClimbTracker extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.action_disconnect) {
             firebaseRef.unauth();
-            mGoogleApiClient.disconnect();
-            mGoogleApiClient.connect();
+            mGoogleAuthApiClient.disconnect();
+            mGoogleAuthApiClient.connect();
         }
 
         return super.onOptionsItemSelected(item);
@@ -222,7 +225,7 @@ public class ClimbTracker extends AppCompatActivity
                 // The intent was canceled before it was sent.  Return to the default
                 // state and attempt to connect to get an updated ConnectionResult.
                 mIntentInProgress = false;
-                mGoogleApiClient.connect();
+                mGoogleAuthApiClient.connect();
             }
         }
     }
@@ -230,8 +233,8 @@ public class ClimbTracker extends AppCompatActivity
     protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
         if (requestCode == RC_SIGN_IN) {
             mIntentInProgress = false;
-            if (!mGoogleApiClient.isConnecting()) {
-                mGoogleApiClient.connect();
+            if (!mGoogleAuthApiClient.isConnecting()) {
+                mGoogleAuthApiClient.connect();
             }
         }
     }
@@ -247,7 +250,7 @@ public class ClimbTracker extends AppCompatActivity
 
                 try {
                     String scope = String.format("oauth2:%s", Scopes.PROFILE);
-                    token = GoogleAuthUtil.getToken(ClimbTracker.this, Plus.AccountApi.getAccountName(mGoogleApiClient), scope);
+                    token = GoogleAuthUtil.getToken(ClimbTracker.this, Plus.AccountApi.getAccountName(mGoogleAuthApiClient), scope);
                 } catch (IOException transientEx) {
                     /* Network or server error */
                     Log.e(LOG_TAG, "Error authenticating with Google: " + transientEx);
@@ -255,7 +258,7 @@ public class ClimbTracker extends AppCompatActivity
                 } catch (UserRecoverableAuthException e) {
                     Log.w(LOG_TAG, "Recoverable Google OAuth error: " + e.toString());
                     /* We probably need to ask for permissions, so start the intent if there is none pending */
-                    mGoogleApiClient.connect();
+                    mGoogleAuthApiClient.connect();
                 } catch (GoogleAuthException authEx) {
                     /* The call is not ever expected to succeed assuming you have already verified that
                      * Google Play services is installed. */
@@ -292,7 +295,7 @@ public class ClimbTracker extends AppCompatActivity
     }
 
     public void onConnectionSuspended(int cause) {
-        mGoogleApiClient.connect();
+        mGoogleAuthApiClient.connect();
     }
 
 
@@ -341,7 +344,15 @@ public class ClimbTracker extends AppCompatActivity
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String gradeSystemType = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
 
-        Climb newClimb = new Climb(new Date(), grade, gradeSystemType);
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        double latitude = 0;
+        double longitude = 0;
+        if(lastLocation != null) {
+            latitude = lastLocation.getLatitude();
+            longitude = lastLocation.getLongitude();
+        }
+
+        Climb newClimb = new Climb(new Date(), grade, gradeSystemType, latitude, longitude);
         mNewClimbRef = firebaseRef.child("users")
                 .child(mAuthData.getUid())
                 .child("climbs")
