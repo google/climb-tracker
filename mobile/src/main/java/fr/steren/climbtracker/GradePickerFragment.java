@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.view.ContextThemeWrapper;
 
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class GradePickerFragment extends DialogFragment {
 
         mGradeList = new GradeList((Activity) mListener, gradeSystemTypePref);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.PickerDialog));
 
         ArrayList<String> grades = mGradeList.getGradeStringList();
         CharSequence[] cs = grades.toArray(new CharSequence[grades.size()]);
