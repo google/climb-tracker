@@ -14,14 +14,28 @@ package fr.steren.climbtracker;
 
 import com.firebase.client.Firebase;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Logger;
+import com.google.android.gms.analytics.Tracker;
+
 /**
  * Initialize Firebase with the application context. This must happen before the client is used.
  */
 public class ClimbTrackerApplication extends android.app.Application {
+    private Tracker mTracker;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Firebase.getDefaultConfig().setPersistenceEnabled(true);
         Firebase.setAndroidContext(this);
+    }
+
+    synchronized public Tracker getDefaultTracker() {
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            mTracker = analytics.newTracker(R.xml.global_tracker);
+        }
+        return mTracker;
     }
 }

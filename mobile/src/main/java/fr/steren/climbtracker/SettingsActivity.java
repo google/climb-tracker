@@ -35,7 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            navigateUpTo(new Intent(this, ClimbTracker.class));
+            navigateUpTo(new Intent(this, ClimbTrackerActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

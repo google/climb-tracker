@@ -24,7 +24,7 @@ import java.util.Date;
  * An activity representing a single ClimbSession detail screen. This
  * activity is only used on handset devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link fr.steren.climbtracker.ClimbTracker}.
+ * in a {@link ClimbTrackerActivity}.
  * <p/>
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link ClimbSessionDetailFragment}.
@@ -80,7 +80,7 @@ public class ClimbSessionDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, ClimbTracker.class));
+            navigateUpTo(new Intent(this, ClimbTrackerActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

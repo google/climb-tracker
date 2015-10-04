@@ -33,6 +33,8 @@ import android.widget.Toast;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -69,13 +71,13 @@ import fr.steren.climblib.Path;
  * {@link ClimbSessionListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class ClimbTracker extends AppCompatActivity
+public class ClimbTrackerActivity extends AppCompatActivity
         implements ClimbSessionListFragment.Callbacks, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
         GradePickerFragment.GradeDialogListener {
 
-    private static final String LOG_TAG = ClimbTracker.class.getSimpleName();
+    private static final String LOG_TAG = ClimbTrackerActivity.class.getSimpleName();
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -105,10 +107,22 @@ public class ClimbTracker extends AppCompatActivity
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
 
+    /** Analytics tracker */
+    private Tracker mTracker;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_climb_tracker);
+
+        // Analytics.
+        ClimbTrackerApplication application = (ClimbTrackerApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
+        // track pageview
+        mTracker.setScreenName(LOG_TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         Firebase.setAndroidContext(this);
         firebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
@@ -193,7 +207,7 @@ public class ClimbTracker extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(ClimbTracker.this, SettingsActivity.class);
+            Intent intent = new Intent(ClimbTrackerActivity.this, SettingsActivity.class);
             startActivity(intent);
         } else if (id == R.id.action_disconnect) {
             firebaseRef.unauth();
@@ -219,8 +233,7 @@ public class ClimbTracker extends AppCompatActivity
         if (!mIntentInProgress && result.hasResolution()) {
             try {
                 mIntentInProgress = true;
-                startIntentSenderForResult(result.getResolution().getIntentSender(),
-                        RC_SIGN_IN, null, 0, 0, 0);
+                startIntentSenderForResult(result.getResolution().getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
             } catch (IntentSender.SendIntentException e) {
                 // The intent was canceled before it was sent.  Return to the default
                 // state and attempt to connect to get an updated ConnectionResult.
@@ -250,7 +263,7 @@ public class ClimbTracker extends AppCompatActivity
 
                 try {
                     String scope = String.format("oauth2:%s", Scopes.PROFILE);
-                    token = GoogleAuthUtil.getToken(ClimbTracker.this, Plus.AccountApi.getAccountName(mGoogleAuthApiClient), scope);
+                    token = GoogleAuthUtil.getToken(ClimbTrackerActivity.this, Plus.AccountApi.getAccountName(mGoogleAuthApiClient), scope);
                 } catch (IOException transientEx) {
                     /* Network or server error */
                     Log.e(LOG_TAG, "Error authenticating with Google: " + transientEx);
@@ -282,7 +295,7 @@ public class ClimbTracker extends AppCompatActivity
 
                     @Override
                     public void onAuthenticationError(FirebaseError firebaseError) {
-                        Toast.makeText(ClimbTracker.this, firebaseError.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ClimbTrackerActivity.this, firebaseError.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -332,6 +345,11 @@ public class ClimbTracker extends AppCompatActivity
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(Path.PREF_GRAD_SYSTEM_TYPE)) {
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("settings")
+                    .setAction("changed-system")
+                    .build());
+
             String gradeSystemTypePref = sharedPreferences.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
             sendGradeSystemToWear(gradeSystemTypePref);
         }
@@ -339,6 +357,11 @@ public class ClimbTracker extends AppCompatActivity
 
     @Override
     public void onGradeSelected(String grade) {
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("action")
+                .setAction("save-climb")
+                .build());
+
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String gradeSystemType = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
 

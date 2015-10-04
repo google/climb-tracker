@@ -25,6 +25,8 @@ import android.widget.TextView;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.Date;
 
@@ -34,11 +36,13 @@ import java.util.Date;
  * Takes as argument a Date that will be used to fetch the climbs.
  * If no date is provided as argument, another argument is expected to exist:
  * the ID of a climb from which the date will be extracted
- * This fragment is either contained in a {@link fr.steren.climbtracker.ClimbTracker}
+ * This fragment is either contained in a {@link ClimbTrackerActivity}
  * in two-pane mode (on tablets) or a {@link ClimbSessionDetailActivity}
  * on handsets.
  */
 public class ClimbSessionDetailFragment extends Fragment {
+    private static final String LOG_TAG = ClimbSessionDetailFragment.class.getSimpleName();
+
     /**
      * The fragment argument representing the climb ID that this fragment
      * represents.
@@ -55,6 +59,9 @@ public class ClimbSessionDetailFragment extends Fragment {
     /** The selected Climb, if any */
     private Climb mSelectedClimb;
 
+    /** Analytics tracker */
+    private Tracker mTracker;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -65,6 +72,14 @@ public class ClimbSessionDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Analytics.
+        ClimbTrackerApplication application = (ClimbTrackerApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
+
+        // track pageview
+        mTracker.setScreenName(LOG_TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         mFirebaseRef = new Firebase(getResources().getString(R.string.firebase_url));
         AuthData authData = mFirebaseRef.getAuth();
@@ -103,6 +118,11 @@ public class ClimbSessionDetailFragment extends Fragment {
                                 // delete this climb
                                 String selectedKey = mSelectedClimb.getKey();
                                 mFirebaseRef.child(selectedKey).removeValue();
+
+                                mTracker.send(new HitBuilders.EventBuilder()
+                                        .setCategory("action")
+                                        .setAction("delete-climb")
+                                        .build());
                             }
                         })
                         .setNegativeButton(R.string.action_delete_climb_cancel, new DialogInterface.OnClickListener() {
