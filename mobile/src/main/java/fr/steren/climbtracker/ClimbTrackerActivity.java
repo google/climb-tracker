@@ -12,9 +12,11 @@ Copyright 2014 Google Inc. All rights reserved.
 */
 package fr.steren.climbtracker;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,7 +24,9 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -49,6 +53,7 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import fr.steren.climblib.GradeList;
@@ -78,6 +83,8 @@ public class ClimbTrackerActivity extends AppCompatActivity
         GradePickerFragment.GradeDialogListener {
 
     private static final String LOG_TAG = ClimbTrackerActivity.class.getSimpleName();
+
+    private static final int PERMISSION_UPFRONT_REQUEST = 123;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -140,6 +147,7 @@ public class ClimbTrackerActivity extends AppCompatActivity
                 .build();
         mGoogleApiClient.connect();
 
+
         /* Check if the user is authenticated with Firebase already. If this is the case we can set the authenticated
          * user and hide hide any login buttons */
         firebaseRef.addAuthStateListener(new Firebase.AuthStateListener() {
@@ -148,12 +156,6 @@ public class ClimbTrackerActivity extends AppCompatActivity
                 setAuthenticatedUser(authData);
             }
         });
-
-
-        AuthData authData = firebaseRef.getAuth();
-        if(authData == null) {
-            mGoogleAuthApiClient.connect();
-        }
 
         if (findViewById(R.id.climbsession_detail_container) != null) {
             // The detail container view will be present only in the
@@ -169,6 +171,29 @@ public class ClimbTrackerActivity extends AppCompatActivity
                     .setActivateOnItemClick(true);
         }
 
+        initFAB();
+
+        initPreferences();
+
+        boolean needPermission = checkAndRequestPermissions();
+
+        AuthData authData = firebaseRef.getAuth();
+        if(!needPermission && authData == null) {
+            mGoogleAuthApiClient.connect();
+        }
+    }
+
+    private void initPreferences() {
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String gradeSystemTypePref = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
+        sendGradeSystemToWear(gradeSystemTypePref);
+    }
+
+    private void initFAB() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,15 +202,37 @@ public class ClimbTrackerActivity extends AppCompatActivity
                 gradePickerFragment.show(getSupportFragmentManager(), "gradePicker");
             }
         });
+    }
+
+    /**
+     * Check for required and optional permissions and request them if needed
+     * @return true if there are permissions to ask, false otherwise
+     */
+    private boolean checkAndRequestPermissions() {
+        ArrayList<String> permissionsToAsk = new ArrayList<String>();
+
+        // Check for account permission, request it if not granted.
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToAsk.add(Manifest.permission.GET_ACCOUNTS);
+        }
+
+        // Request for location permission if not already granted and not already asked
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // We are cool with this one, we do not ask if the user already declined
+            if(!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                permissionsToAsk.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+            }
+        }
+
+        if(!permissionsToAsk.isEmpty()) {
+            String[] permissionsToAskArray = permissionsToAsk.toArray(new String[permissionsToAsk.size()]);
+            ActivityCompat.requestPermissions(this, permissionsToAskArray, PERMISSION_UPFRONT_REQUEST);
+            return true;
+        } else {
+            return false;
+        }
 
 
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(this);
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String gradeSystemTypePref = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
-        sendGradeSystemToWear(gradeSystemTypePref);
     }
 
     private void sendGradeSystemToWear(String system) {
@@ -222,10 +269,6 @@ public class ClimbTrackerActivity extends AppCompatActivity
      * Once a user is logged in, take the mAuthData provided from Firebase and "use" it.
      */
     private void setAuthenticatedUser(AuthData authData) {
-        if (authData != null) {
-            String name = (String) authData.getProviderData().get("displayName");
-            Toast.makeText(this, "Authenticated user: " + name, Toast.LENGTH_LONG).show();
-        }
         this.mAuthData = authData;
     }
 
@@ -344,7 +387,7 @@ public class ClimbTrackerActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(key.equals(Path.PREF_GRAD_SYSTEM_TYPE)) {
+        if (key.equals(Path.PREF_GRAD_SYSTEM_TYPE)) {
             mTracker.send(new HitBuilders.EventBuilder()
                     .setCategory("settings")
                     .setAction("changed-system")
@@ -365,12 +408,15 @@ public class ClimbTrackerActivity extends AppCompatActivity
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String gradeSystemType = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
 
-        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         double latitude = 0;
         double longitude = 0;
-        if(lastLocation != null) {
-            latitude = lastLocation.getLatitude();
-            longitude = lastLocation.getLongitude();
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if(lastLocation != null) {
+                latitude = lastLocation.getLatitude();
+                longitude = lastLocation.getLongitude();
+            }
         }
 
         Climb newClimb = new Climb(new Date(), grade, gradeSystemType, latitude, longitude);
@@ -387,5 +433,30 @@ public class ClimbTrackerActivity extends AppCompatActivity
                 mNewClimbRef.removeValue();
             }
         }).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_UPFRONT_REQUEST: {
+
+                for(int i = 0; i < grantResults.length; i++ ) {
+                    if(permissions[i].equals(Manifest.permission.ACCESS_COARSE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_DENIED ) {
+                        // no problem, just say we are not going to store location
+                        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
+                        Snackbar.make(coordinatorLayout, R.string.location_permission_denied, Snackbar.LENGTH_LONG).show();
+
+                    } else if(permissions[i].equals(Manifest.permission.GET_ACCOUNTS) && grantResults[i] == PackageManager.PERMISSION_DENIED ) {
+                        // We need it to log in.
+                        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
+                        Snackbar.make(coordinatorLayout, R.string.account_permission_denied, Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                mGoogleAuthApiClient.connect();
+                return;
+            }
+
+        }
     }
 }

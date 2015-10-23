@@ -12,10 +12,13 @@ Copyright 2014 Google Inc. All rights reserved.
 */
 package fr.steren.climbtracker;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.firebase.client.AuthData;
@@ -73,7 +76,11 @@ public class MobileDataLayerListenerService extends WearableListenerService {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String gradeSystemType = sharedPref.getString(Path.PREF_GRAD_SYSTEM_TYPE, GradeList.SYSTEM_DEFAULT);
 
-        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Location lastLocation = null;
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            lastLocation  = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
 
         for (DataEvent event : events) {
             Log.d(TAG, "Event: " + event.getDataItem().toString());
