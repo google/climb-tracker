@@ -445,16 +445,16 @@ public class ClimbTrackerActivity extends AppCompatActivity
                         // no problem, just say we are not going to store location
                         final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
                         Snackbar.make(coordinatorLayout, R.string.location_permission_denied, Snackbar.LENGTH_LONG).show();
-
-                    } else if(permissions[i].equals(Manifest.permission.GET_ACCOUNTS) && grantResults[i] == PackageManager.PERMISSION_DENIED ) {
-                        // We need it to log in.
-                        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
-                        Snackbar.make(coordinatorLayout, R.string.account_permission_denied, Snackbar.LENGTH_LONG).show();
                     }
                 }
 
-                mGoogleAuthApiClient.connect();
-                return;
+                if(ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED) {
+                    mGoogleAuthApiClient.connect();
+                } else {
+                    // We need it to log in.
+                    final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
+                    Snackbar.make(coordinatorLayout, R.string.account_permission_denied, Snackbar.LENGTH_LONG).show();
+                }
             }
 
         }
