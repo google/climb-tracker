@@ -212,6 +212,7 @@ public class ClimbTrackerActivity extends AppCompatActivity
         ArrayList<String> permissionsToAsk = new ArrayList<String>();
 
         // Check for account permission, request it if not granted.
+        // it seems that we cannot simply use Manifest.permission.USE_CREDENTIALS ?
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
             permissionsToAsk.add(Manifest.permission.GET_ACCOUNTS);
         }
@@ -439,21 +440,32 @@ public class ClimbTrackerActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_UPFRONT_REQUEST: {
-
-                for(int i = 0; i < grantResults.length; i++ ) {
-                    if(permissions[i].equals(Manifest.permission.ACCESS_COARSE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_DENIED ) {
-                        // no problem, just say we are not going to store location
-                        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
-                        Snackbar.make(coordinatorLayout, R.string.location_permission_denied, Snackbar.LENGTH_LONG).show();
-                    }
-                }
-
+                // first check if we can login
                 if(ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED) {
+
+                    // if we can, check if we can see the location, if not, display a message.
+                    for(int i = 0; i < grantResults.length; i++ ) {
+                        if(permissions[i].equals(Manifest.permission.ACCESS_COARSE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_DENIED ) {
+                            // no problem, just say we are not going to store location
+                            final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
+                            Snackbar.make(coordinatorLayout, R.string.location_permission_denied, Snackbar.LENGTH_LONG).show();
+                        }
+                    }
                     mGoogleAuthApiClient.connect();
                 } else {
-                    // We need it to log in.
+                    // We need this permission to log in, explain and ask again
                     final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
-                    Snackbar.make(coordinatorLayout, R.string.account_permission_denied, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(coordinatorLayout, R.string.account_permission_denied, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(android.R.string.ok, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Request the permission again.
+                            ActivityCompat.requestPermissions(ClimbTrackerActivity.this,
+                                    new String[]{Manifest.permission.GET_ACCOUNTS},
+                                    PERMISSION_UPFRONT_REQUEST);
+                        }
+                    })
+                    .show();
                 }
             }
 
