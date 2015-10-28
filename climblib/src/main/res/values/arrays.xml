@@ -6,6 +6,8 @@
         <item>uuia</item>
         <item>french</item>
         <item>saxon</item>
+        <item>bouldering_hueco</item>
+        <item>bouldering_font</item>
     </string-array>
 
     <string-array name="pref_gradeSystems_entries">
@@ -13,6 +15,8 @@
         <item>UUIA (6, 6+, 7-, ...)</item>
         <item>French (6a, 6a+, ...)</item>
         <item>Saxon (VIIa, VIIb, ...)</item>
+        <item>Hueco (V1, V2, ...)</item>
+        <item>Font (6A, 6A+, ...)</item>
     </string-array>
 
     <!-- see https://en.wikipedia.org/wiki/Grade_(climbing) -->
@@ -120,4 +124,50 @@
         <item>XIb</item>
         <item>XIc</item>
     </array>
+    <array name="grades_bouldering_hueco">
+        <item>V0</item>
+        <item>V0+</item>
+        <item>V1</item>
+        <item>V2</item>
+        <item>V3</item>
+        <item>V4</item>
+        <item>V5</item>
+        <item>V6</item>
+        <item>V7</item>
+        <item>V8</item>
+        <item>V9</item>
+        <item>V10</item>
+        <item>V11</item>
+        <item>V12</item>
+        <item>V13</item>
+        <item>V14</item>
+        <item>V15</item>
+        <item>V16</item>
+    </array>
+    <array name="grades_bouldering_font">
+        <item>3</item>
+        <item>4</item>
+        <item>4+</item>
+        <item>5</item>
+        <item>5+</item>
+        <item>6A</item>
+        <item>6A+</item>
+        <item>6B</item>
+        <item>6B+</item>
+        <item>6C</item>
+        <item>6C+</item>
+        <item>7A</item>
+        <item>7A+</item>
+        <item>7B</item>
+        <item>7B+</item>
+        <item>7C</item>
+        <item>7C+</item>
+        <item>8A</item>
+        <item>8A+</item>
+        <item>8B</item>
+        <item>8B+</item>
+        <item>8C</item>
+        <item>8C+</item>
+    </array>
+
 </resources>

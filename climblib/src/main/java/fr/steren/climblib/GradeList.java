@@ -27,6 +27,9 @@ public class GradeList {
     public static final String SYSTEM_FRENCH = "french";
     public static final String SYSTEM_SAXON = "saxon";
 
+    public static final String SYSTEM_BOULDERING_HUECO = "bouldering_hueco";
+    public static final String SYSTEM_BOULDERING_FONT = "bouldering_font";
+
     public static final String SYSTEM_DEFAULT = SYSTEM_UUIA;
 
     public GradeList(Context context, String gradeSystem) {
@@ -58,6 +61,10 @@ public class GradeList {
                 return R.array.grades_french;
             case SYSTEM_SAXON:
                 return R.array.grades_saxon;
+            case SYSTEM_BOULDERING_HUECO:
+                return R.array.grades_bouldering_hueco;
+            case SYSTEM_BOULDERING_FONT:
+                return R.array.grades_bouldering_font;
             default:
                 return R.array.grades_yds;
         }
