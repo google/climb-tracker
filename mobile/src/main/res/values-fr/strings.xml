@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_climbsession_detail">Session d\'escalade</string>
+    <string name="pref_gradeSystemType">Système de cotation</string>
+    <string name="title_pref_activityname">Paramètres</string>
+    <string name="pick_grade">Sélectionner une cotation</string>
+    <string name="climb_confirmation">Grimpe enregistrée</string>
+    <string name="climb_save_undo">Annuler</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="action_disconnect">Déconnexion</string>
+    <string name="account_permission_denied">La permission \"d\'accéder aux contacts\" est requise pour se connecter via Google.</string>
+    <string name="location_permission_denied">La géolocalisation ne sera pas enregistrée.</string>
+    <string name="action_delete_climb_title">Supprimer</string>
+    <string name="action_delete_climb_message">Êtes vous certain de vouloir supprimer cette ascension ?</string>
+    <string name="action_delete_climb_confirm">Supprimer</string>
+    <string name="action_delete_climb_cancel">Annuler</string>
+</resources>

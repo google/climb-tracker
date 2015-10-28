@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="climb">Ascension</string>
+    <string name="climb_recap">Voie %1$s</string>
+    <string name="saving_climb">Enregistrement...</string>
+    <string name="climb_canceled">Annulé</string>
+    <string name="climb_saved">%1$s grimpé</string>
+</resources>
